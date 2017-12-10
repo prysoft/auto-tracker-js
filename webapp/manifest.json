@@ -1,0 +1,77 @@
+{
+  "_version": "1.1.0",
+
+  "sap.app": {
+    "_version": "1.1.0",
+    "id": "sap.ui.ui5test",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    }
+  },
+
+  "sap.ui": {
+    "_version": "1.1.0",
+    "technology": "UI5",
+    "deviceTypes": {"desktop": true, "tablet": true, "phone": true},
+    "supportedThemes": ["sap_belize"]
+  },
+
+  "sap.ui5": {
+    "_version": "1.1.0",
+    "rootView": "com.prysoft.autotracker.view.App",
+    "dependencies": {
+      "minUI5Version": "1.50",
+      "libs": {
+        "sap.m": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.prysoft.autotracker.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": [{"uri": "css/style.css"}]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "com.prysoft.autotracker.view",
+        "parent": "appTools",
+        "controlId": "mainContainer",
+        "controlAggregation": "pages"
+      },
+      "routes": [
+        {"pattern": "", "name": "start", "target": "start"}
+      ],
+      "targets": {
+        "login": {
+          "viewName": "Login",
+          "viewLevel": 1,
+          "transition": "fade",
+          "parent": null,
+          "controlId": "theApp",
+          "controlAggregation": "pages"
+        },
+        "appTools": {
+          "viewName": "AppTools",
+          "viewLevel": 1,
+          "transition": "fade",
+          "parent": null,
+          "controlId": "theApp",
+          "controlAggregation": "pages"
+        },
+        "start": {"viewName": "Home", "viewLevel": 1}
+      }
+    }
+  }
+
+}

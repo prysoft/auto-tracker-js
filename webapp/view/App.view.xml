@@ -1,0 +1,12 @@
+<!--
+    mvc:View displayBlock="true"
+    Чтобы убрать вертикальный скролл бар и скроллинг пары пикселей
+    из-за полосы sapMShellBrandingBar вверху контейнера shell
+-->
+<mvc:View controllerName="com.prysoft.autotracker.controller.App"
+          xmlns="sap.m"
+          xmlns:mvc="sap.ui.core.mvc"
+          displayBlock="true">
+
+    <App id="theApp" class="appRootStyle" />
+</mvc:View>

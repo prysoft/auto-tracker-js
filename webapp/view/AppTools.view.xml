@@ -1,0 +1,41 @@
+<mvc:View controllerName="com.prysoft.autotracker.controller.AppTools"
+          xmlns="sap.m"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:tnt="sap.tnt">
+
+    <tnt:ToolPage id="toolPage" sideExpanded="false">
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button icon="sap-icon://menu2" type="Transparent" visible="{device>/isPhone}" press="onSideNavButtonPress">
+                    <layoutData>
+                        <OverflowToolbarLayoutData priority="NeverOverflow" />
+                    </layoutData>
+                </Button>
+                <Label text="{i18n>appTitle}"/>
+                <ToolbarSpacer />
+                <Button icon="sap-icon://log" type="Transparent" press="onExitPress">
+                    <layoutData>
+                        <OverflowToolbarLayoutData priority="NeverOverflow" />
+                    </layoutData>
+                </Button>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation itemSelect="showTempToast">
+                <tnt:item>
+                    <tnt:NavigationList>
+                        <tnt:NavigationListItem id="mnAuto" text="Автомобили" icon="sap-icon://car-rental" />
+                        <tnt:NavigationListItem text="Техническое состояние" icon="sap-icon://wrench" />
+                        <tnt:NavigationListItem text="Водители" icon="sap-icon://group" />
+                        <tnt:NavigationListItem text="Аналитика" icon="sap-icon://area-chart" />
+                        <tnt:NavigationListItem text="Логистика" icon="sap-icon://journey-change" />
+                    </tnt:NavigationList>
+                </tnt:item>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer id="mainContainer" />
+        </tnt:mainContents>
+    </tnt:ToolPage>
+
+</mvc:View>

@@ -1,2 +1,2 @@
 # auto-tracker-js
-Crossplatform javascript application
+Cross-platform javascript application

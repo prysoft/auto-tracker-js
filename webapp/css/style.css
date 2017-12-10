@@ -1,0 +1,32 @@
+.sap-ui-custom-extra .sapThemeNegativeText {
+    color: #e52929;
+}
+
+.sap-ui-custom-extra .appRootStyle .login-view-page .sapMPanelContent {
+    background-color: transparent;
+    border: none;
+}
+
+.sap-ui-custom-extra .sapMLabel.vehicle-name {
+    font-weight: bold;
+}
+.sap-ui-custom-extra .sapMLabel.vehicle-address {
+    position: absolute;
+    font-style: italic;
+    font-size: 0.7rem;
+    line-height: 2.0rem;
+}
+
+/* Side menu begin */
+.sap-ui-custom-extra.sap-phone .sapTntToolPageAsideCollapsed .sapTntToolPageAside {
+    -webkit-transform: translateX(-3rem);
+    transform: translateX(-3rem);
+}
+.sap-ui-custom-extra.sap-phone .sapTntToolPageAside {width:3rem;}
+.sap-ui-custom-extra.sap-phone .sapTntSideNavigation {width:3rem;}
+
+.sap-ui-custom-extra.sap-phone .sapTntToolPageMain {
+    -webkit-transform: translateX(3rem);
+    transform: translateX(3rem);
+}
+/* Side menu end */
