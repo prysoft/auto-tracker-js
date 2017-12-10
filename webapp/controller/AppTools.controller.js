@@ -10,10 +10,14 @@ sap.ui.define([
         },
 
         showTempToast: function(oEvent) {
-            var item = oEvent.getParameter('item');
-            if (item.getId().indexOf('mnAuto') < 0) {
+            var item = oEvent.getParameter('item'); // returns tnt:NavigationListItem
+            var routeName = item.data('params');
+            if (!routeName || routeName.indexOf('start') < 0 && routeName.indexOf('techState') < 0) {
                 MessageToast.show('Раздел "' + item.getText() + '" временно недоступен');
+                return;
             }
+
+            this.getRouter().navTo(routeName);
         }
     });
 });

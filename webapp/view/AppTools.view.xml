@@ -1,7 +1,8 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.AppTools"
           xmlns="sap.m"
           xmlns:mvc="sap.ui.core.mvc"
-          xmlns:tnt="sap.tnt">
+          xmlns:tnt="sap.tnt"
+          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 
     <tnt:ToolPage id="toolPage" sideExpanded="false">
         <tnt:header>
@@ -24,11 +25,11 @@
             <tnt:SideNavigation itemSelect="showTempToast">
                 <tnt:item>
                     <tnt:NavigationList>
-                        <tnt:NavigationListItem id="mnAuto" text="Автомобили" icon="sap-icon://car-rental" />
-                        <tnt:NavigationListItem text="Техническое состояние" icon="sap-icon://wrench" />
-                        <tnt:NavigationListItem text="Водители" icon="sap-icon://group" />
-                        <tnt:NavigationListItem text="Аналитика" icon="sap-icon://area-chart" />
-                        <tnt:NavigationListItem text="Логистика" icon="sap-icon://journey-change" />
+                        <tnt:NavigationListItem app:params="start" text="{i18n>tAuto}" icon="sap-icon://car-rental" />
+                        <tnt:NavigationListItem app:params="techState" text="{i18n>tTechState}" icon="sap-icon://wrench" />
+                        <!--<tnt:NavigationListItem text="{i18n>tDrivers}" icon="sap-icon://group" visible="false"/>-->
+                        <!--<tnt:NavigationListItem text="{i18n>tAnalytics}" icon="sap-icon://area-chart" />-->
+                        <!--<tnt:NavigationListItem text="{i18n>tLogistics}" icon="sap-icon://journey-change" />-->
                     </tnt:NavigationList>
                 </tnt:item>
             </tnt:SideNavigation>

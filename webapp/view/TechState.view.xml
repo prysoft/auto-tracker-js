@@ -1,19 +1,19 @@
-<mvc:View controllerName="com.prysoft.autotracker.controller.Home"
+<mvc:View controllerName="com.prysoft.autotracker.controller.TechState"
           xmlns:mvc="sap.ui.core.mvc"
           xmlns="sap.m">
 
     <SplitContainer mode="StretchCompressMode">
         <masterPages>
-            <Page title="{i18n>tAuto}" class="sapUiStdPage">
+            <Page title="{i18n>tTechState}" class="sapUiStdPage">
                 <content>
                     <Label text="СПИСОК" />
                 </content>
             </Page>
         </masterPages>
         <detailPages>
-            <Page showHeader="false" class="sapUiStdPage">
+            <Page title="Тех. состояние. Заголовок 1" class="sapUiStdPage">
                 <content>
-                    <Label text="КАРТА" />
+                    <Label text="ДЕТАЛЬНАЯ ИНФОРМАЦИЯ" />
                 </content>
             </Page>
         </detailPages>
