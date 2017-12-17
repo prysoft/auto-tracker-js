@@ -57,6 +57,7 @@ sap.ui.define([
                     this._yMap = new ymaps.Map(this.sId, {
                         center: ['59.220492', '39.891568'],
                         zoom: 12,
+                        type: 'yandex#hybrid',
                         controls: [
                             'zoomControl'
                             //'searchControl',
