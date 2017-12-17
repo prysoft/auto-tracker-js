@@ -1,19 +1,55 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.Home"
+          xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc"
+          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+          xmlns:pry="com.prysoft.sap.control"
           xmlns="sap.m">
 
-    <SplitContainer mode="StretchCompressMode">
+    <SplitContainer id="autoSplit" mode="StretchCompressMode">
         <masterPages>
-            <Page title="{i18n>tAuto}" class="sapUiStdPage">
+            <Page id="autoSplitMaster" title="{i18n>tAuto}" class="sapUiStdPage">
                 <content>
-                    <Label text="СПИСОК" />
+                    <List items="{path: '/units'}" itemPress="locateMe">
+                        <CustomListItem type="Active" app:params="{id}">
+                            <HBox>
+                                <!--<core:Icon size="2rem" src="sap-icon://car-rental" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" />-->
+                                <FlexBox fitContainer="true" alignItems="Center" justifyContent="Center" width="4rem" height="4rem">
+                                    <Image class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom"
+                                           src="{icon}"
+                                           densityAware="false"
+                                           width="32px" max-height="32px;" />
+                                </FlexBox>
+                                <VBox class="sapUiSmallMarginTopBottom" width="100%">
+                                    <HBox>
+                                        <Label text="{name}" class="vehicle-name">
+                                            <layoutData>
+                                                <FlexItemData growFactor="1" />
+                                            </layoutData>
+                                        </Label>
+                                        <core:Icon size="1rem" src="sap-icon://locate-me" class="sapUiSmallMarginBeginEnd"/>
+                                        <!--<Button type="Transparent" icon="sap-icon://locate-me" app:params="{id}" press="locateMe" />-->
+                                        <!--<Text text="{path: 'date', type: 'sap.ui.model.type.Date', formatOptions: {style:'short'}}" />-->
+                                    </HBox>
+                                    <Label text="{address}" class="vehicle-address" />
+                                </VBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </content>
             </Page>
         </masterPages>
         <detailPages>
-            <Page showHeader="false" class="sapUiStdPage">
+            <Page id="autoSplitDetail" showHeader="false" class="sapUiStdPage">
                 <content>
-                    <Label text="КАРТА" />
+                    <FlexBox fitContainer="true" direction="Column">
+                        <items>
+                            <pry:YMap fitContainer="true" backButtonPress="backToMaster" showBackButton="{device>/system/phone}">
+                                <pry:layoutData>
+                                    <FlexItemData growFactor="1" />
+                                </pry:layoutData>
+                            </pry:YMap>
+                        </items>
+                    </FlexBox>
                 </content>
             </Page>
         </detailPages>

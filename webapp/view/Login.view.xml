@@ -1,0 +1,16 @@
+<mvc:View controllerName="com.prysoft.autotracker.controller.Login"
+          xmlns="sap.m"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:html="http://www.w3.org/1999/xhtml">
+
+    <FlexBox class="login-view-page" fitContainer="true" alignItems="Center" justifyContent="Center" direction="Column">
+        <items>
+
+            <html:iframe id="auth-remote"
+                         src="https://hosting.wialon.com/login.html?lang=ru&amp;client_id=AuTr&amp;access_type=256&amp;activation_time=0&amp;duration=604800&amp;flags=1&amp;redirect_uri=https://hosting.wialon.com/post_token.html"
+                         style="width:100vw; height:100vh; border:none; min-width:15rem; max-width:620px; max-height:620px;"></html:iframe>
+
+        </items>
+    </FlexBox>
+
+</mvc:View>

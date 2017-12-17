@@ -111,13 +111,6 @@ sap.ui.define([
                     }).bind(this), 0);*/
                 }).bind(this));
             }
-        },
-
-
-        onBtnPress: function () {
-            var oBundle = this.getView().getModel('i18n').getResourceBundle();
-            var rcpName = this.getView().getModel().getProperty('/recipient/name');
-            MessageToast.show(oBundle.getText('helloMsg', [rcpName]));
         }
     });
 });

@@ -14,7 +14,7 @@
     position: absolute;
     font-style: italic;
     font-size: 0.7rem;
-    line-height: 2.0rem;
+    line-height: 1.2rem;
 }
 
 /* Side menu begin */
@@ -30,3 +30,30 @@
     transform: translateX(3rem);
 }
 /* Side menu end */
+
+/* Яндекс класс для совместимости */
+.ymap-navback-btn {
+    -webkit-transition: background-color .15s ease-out,border-color .15s ease-out,opacity .15s ease-out;
+    transition: background-color .15s ease-out,border-color .15s ease-out,opacity .15s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px 1px rgba(0,0,0,.15), 0 2px 5px -3px rgba(0,0,0,.15);
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background-clip: border-box;
+    background-color: #fff;
+    width:28px;
+    height: 28px;
+    color: #000;
+    font-family: Arial,Helvetica,sans-serif;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.ymap-navback-btn:active {
+    background-color: #ebebeb;
+    opacity: 0.5;
+}
