@@ -7,39 +7,9 @@
 
     <SplitContainer id="autoSplit" mode="StretchCompressMode">
         <masterPages>
-            <Page id="autoSplitMaster" title="{i18n>tAuto}" class="sapUiStdPage">
-                <content>
-                    <List items="{path: '/units'}" itemPress="locateMe">
-                        <CustomListItem type="Active" app:params="{id}">
-                            <HBox>
-                                <!--<core:Icon size="2rem" src="sap-icon://car-rental" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" />-->
-                                <FlexBox fitContainer="true" alignItems="Center" justifyContent="Center" width="4rem" height="4rem">
-                                    <Image class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom"
-                                           src="{icon}"
-                                           densityAware="false"
-                                           width="32px" max-height="32px;" />
-                                </FlexBox>
-                                <VBox class="sapUiSmallMarginTopBottom" width="100%">
-                                    <HBox>
-                                        <Label text="{name}" class="vehicle-name">
-                                            <layoutData>
-                                                <FlexItemData growFactor="1" />
-                                            </layoutData>
-                                        </Label>
-                                        <core:Icon size="1rem" src="sap-icon://locate-me" class="sapUiSmallMarginBeginEnd"/>
-                                        <!--<Button type="Transparent" icon="sap-icon://locate-me" app:params="{id}" press="locateMe" />-->
-                                        <!--<Text text="{path: 'date', type: 'sap.ui.model.type.Date', formatOptions: {style:'short'}}" />-->
-                                    </HBox>
-                                    <Label text="{address}" class="vehicle-address" />
-                                </VBox>
-                            </HBox>
-                        </CustomListItem>
-                    </List>
-                </content>
-            </Page>
         </masterPages>
         <detailPages>
-            <Page id="autoSplitDetail" showHeader="false" class="sapUiStdPage">
+            <Page id="autoSplitDetailMap" showHeader="false" class="sapUiStdPage">
                 <content>
                     <FlexBox fitContainer="true" direction="Column">
                         <items>

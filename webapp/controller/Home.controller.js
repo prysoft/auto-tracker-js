@@ -8,11 +8,18 @@ sap.ui.define([
             console.log('HOME_INIT');
         },
 
+        goToInfo: function(oEvent) {
+            var oItem = oEvent.getParameter('listItem');
+            this.getRouter().navTo("unitState",{
+                unitIdx : oItem.getParent().indexOfItem(oItem)
+            });
+        },
+
         locateMe: function(oEvent) {
             console.log('onListItemPress', oEvent.getParameter('listItem').data('params'));
             //var sToPageId = oEvent.getParameter('listItem').getCustomData()[0].getValue();
 
-            this.byId('autoSplit').toDetail(this.createId('autoSplitDetail'));
+            this.byId('autoSplit').toDetail(this.createId('autoSplitDetailMap'));
         },
 
         backToMaster: function(oEvent) {

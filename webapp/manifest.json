@@ -51,6 +51,7 @@
       },
       "routes": [
         {"pattern": "", "name": "start", "target": "start"},
+        {"pattern": "unit/:unitIdx:", "name": "unitState", "target": "unitState"},
         {"pattern": "tech-state", "name": "techState", "target": "techState"}
       ],
       "targets": {
@@ -70,7 +71,9 @@
           "controlId": "theApp",
           "controlAggregation": "pages"
         },
-        "start": {"viewName": "Home", "viewLevel": 1},
+        "home": {"viewName": "Home", "viewLevel": 1},
+        "start": {"viewName": "UnitList", "parent":"home", "controlId":"autoSplit", "controlAggregation":"masterPages", "viewLevel":1},
+        "unitState": {"viewName": "UnitState", "parent":"home", "controlId":"autoSplit", "controlAggregation":"masterPages", "viewLevel":2},
         "techState": {"viewName": "TechState", "viewLevel": 2}
       }
     }

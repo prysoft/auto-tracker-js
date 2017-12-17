@@ -1,0 +1,14 @@
+<mvc:View controllerName="com.prysoft.autotracker.controller.UnitState"
+          xmlns:core="sap.ui.core"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+          xmlns:pry="com.prysoft.sap.control"
+          xmlns="sap.m">
+
+    <Page id="autoSplitMasterInfo" title="{/units/unitIdx/name}" class="sapUiStdPage">
+        <content>
+            <Label text="{/units/0/name}"/>
+        </content>
+    </Page>
+
+</mvc:View>
