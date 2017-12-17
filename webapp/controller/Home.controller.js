@@ -16,7 +16,7 @@ sap.ui.define([
         },
 
         backToMaster: function(oEvent) {
-            this.byId('autoSplit').toMaster(this.createId('autoSplitMaster'));
+            this.byId('autoSplit').backMaster();
         }
     });
 });

@@ -89,14 +89,6 @@ sap.ui.define([
             }).bind(this));
         },
 
-        onSideNavButtonPress: function(){
-            if (sap.ui.Device.system.desktop) {
-                return;
-            }
-            var toolPage = this.getView().byId("toolPage");
-            toolPage.setSideExpanded(!toolPage.getSideExpanded());
-        },
-
         onExitPress: function() {
             var user = wialon.core.Session.getInstance().getCurrUser();
             if (user){ // if user logged in - logout
