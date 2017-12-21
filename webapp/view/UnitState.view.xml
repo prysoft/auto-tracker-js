@@ -55,7 +55,7 @@
                     </core:Icon>
                     <Text text="{satelliteCnt}" class="text-color-satellite sapUiTinyMarginBeginEnd">
                         <layoutData>
-                            <FlexItemData growFactor="1" alignSelf="Center" />
+                            <FlexItemData alignSelf="Center" />
                         </layoutData>
                         <customData>
                             <core:CustomData key="satellites" value="true" writeToDom="{= ${satelliteCnt} > 0 }" />
