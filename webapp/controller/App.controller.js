@@ -61,13 +61,36 @@ sap.ui.define([
                     var unit = {
                         id: avlUnits[i].getId(),
                         name: avlUnits[i].getName(),
-                        icon: avlUnits[i].getIconUrl(32)
+                        icon: avlUnits[i].getIconUrl(32),
+                        iconS: avlUnits[i].getIconUrl(16)
                     };
+
+                    var lastMsg = avlUnits[i].getLastMessage();
+                    if (lastMsg) {
+                        // lastMsg.i; // входящие данные
+                        // lastMsg.p; // параметры
+                        // lastMsg.tp; // Тип сообщения
+                        var typeDesc;
+                        switch(lastMsg.tp) {
+                            case 'ud':
+                                typeDesc = 'сообщение с данными';
+                                unit.isAlarm = !!(unit.f & 16);
+                                break;
+                            case 'us': typeDesc = 'SMS сообщение'; break;
+                            case 'ucr': typeDesc = 'команда'; break;
+                            case 'evt': typeDesc = 'событие'; break;
+                        }
+                        unit.typeDesc = typeDesc;
+                    }
 
                     var pos = avlUnits[i].getPosition();
                     if (pos) {
                         unit.lon = pos.x;
                         unit.lat = pos.y;
+                        unit.alt = pos.z;
+                        unit.speed = pos.s;
+                        unit.course = pos.c;
+                        unit.satelliteCnt = pos.sc;
                         unit.lastMsgTime = wialon.util.DateTime.formatTime(pos.t);
                         unit.address = '[Определение местоположения...]';
                         wialon.util.Gis.getLocations([{lon: pos.x, lat: pos.y}], (function(code, address){

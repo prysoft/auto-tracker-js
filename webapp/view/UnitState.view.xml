@@ -1,11 +1,7 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.UnitState"
-          xmlns:l="sap.ui.layout"
           xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc"
-          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
-          xmlns:pry="com.prysoft.sap.control"
-          xmlns="sap.m"
-          xmlns:html="http://www.w3.org/1999/xhtml">
+          xmlns="sap.m">
 
     <Page id="autoSplitMasterInfo" title="{name}" showNavButton="true" navButtonPress="goBack" class="sapUiStdPage">
         <headerContent>
@@ -14,90 +10,58 @@
                    width="32px" max-height="32px;" />
         </headerContent>
         <content>
-<!--
-            <l:Grid defaultSpan="L3 M4 S6" class="sapUiSmallMarginTop">
-                <l:content>
-                    <StandardListItem
-                            title="Active"
-                            info="Jobs in process"
-                            infoState="Success"
-                            icon="sap-icon://status-in-process">
-                        <layoutData>
-                            <l:GridData span="L12 M12 S12" />
-                        </layoutData>
-                    </StandardListItem>
-                    <StandardListItem
-                            title="Job 15"
-                            description="Payroll" />
-                    <StandardListItem
-                            title="Job 62"
-                            description="Archive" />
-                    <StandardListItem
-                            title="Job 62"
-                            description="Archive" />
-                    <StandardListItem
-                            title="Job 62"
-                            description="Archive" />
-                    <StandardListItem
-                            title="Inactive"
-                            info="Jobs not started"
-                            infoState="None"
-                            icon="sap-icon://status-inactive">
-                        <layoutData>
-                            <l:GridData span="L12 M12 S12" linebreakL="true" linebreakM="true" linebreakS="true" />
-                        </layoutData>
-                    </StandardListItem>
-                    <StandardListItem
-                            title="Job 11"
-                            description="Dunning B" />
-                    <StandardListItem
-                            title="Job 44"
-                            description="MRP" />
-                    <StandardListItem
-                            title="Job 45"
-                            description="Analysis 1" />
-                    <StandardListItem
-                            title="Failed"
-                            info="Jobs with errors"
-                            infoState="Error"
-                            icon="sap-icon://status-error">
-                        <layoutData>
-                            <l:GridData span="L12 M12 S12" linebreakL="true" linebreakM="true" linebreakS="true" />
-                        </layoutData>
-                    </StandardListItem>
-                    <StandardListItem
-                            title="Job 93"
-                            description="Log cleanup" />
-                </l:content>
-            </l:Grid>
--->
             <Panel>
                 <VBox>
-                        <Label text="3 дня назад (2017-05-07 16:04:01)"/>
-                        <Label text="{address}"/>
+                    <Label text="3 дня назад ({lastMsgTime})" class="vehicle-address">
+                        <layoutData>
+                            <FlexItemData growFactor="1" alignSelf="End" />
+                        </layoutData>
+                    </Label>
                     <HBox>
-                        <Text text="51 км/ч" width="100%">
-                            <layoutData>
-                                <FlexItemData growFactor="1" class="bordered-block" />
-                            </layoutData>
-                        </Text>
-                        <Text text="202 м" class="bordered-block" width="100%">
-                            <layoutData>
-                                <FlexItemData growFactor="1"/>
-                            </layoutData>
-                        </Text>
-                        <Text text="11" class="bordered-block" width="100%">
-                            <layoutData>
-                                <FlexItemData growFactor="1"/>
-                            </layoutData>
-                        </Text>
-                        <Text text="{lon}" class="bordered-block bordered-block-close" width="100%">
-                            <layoutData>
-                                <FlexItemData growFactor="1"/>
-                            </layoutData>
-                        </Text>
+                        <core:Icon size="2rem" src="sap-icon://map"/>
+                        <VBox class="sapUiSmallMarginBeginEnd">
+                            <Text text="{lon}" />
+                            <Text text="{lat}" />
+                        </VBox>
                     </HBox>
+                    <Label text="{address}" class="vehicle-address"/>
                 </VBox>
+            </Panel>
+            <Panel>
+                <HBox>
+                    <core:Icon class="custom-icon-1 svg-icon-speed">
+                        <core:customData>
+                            <core:CustomData key="moving" value="true" writeToDom="{= ${speed} > 3 }" />
+                        </core:customData>
+                    </core:Icon>
+                    <Text text="{speed} км/ч" class="text-color-speed sapUiTinyMarginBeginEnd">
+                        <layoutData>
+                            <FlexItemData growFactor="1" alignSelf="Center" />
+                        </layoutData>
+                        <customData>
+                            <core:CustomData key="moving" value="true" writeToDom="{= ${speed} > 3 }" />
+                        </customData>
+                    </Text>
+                    <core:Icon class="custom-icon-1 svg-icon-altitude" />
+                    <Text text="{alt} м" class="sapUiTinyMarginBeginEnd">
+                        <layoutData>
+                            <FlexItemData growFactor="1" alignSelf="Center" />
+                        </layoutData>
+                    </Text>
+                    <core:Icon class="custom-icon-1 svg-icon-satellite">
+                        <core:customData>
+                            <core:CustomData key="satellites" value="true" writeToDom="{= ${satelliteCnt} > 0 }" />
+                        </core:customData>
+                    </core:Icon>
+                    <Text text="{satelliteCnt}" class="text-color-satellite sapUiTinyMarginBeginEnd">
+                        <layoutData>
+                            <FlexItemData growFactor="1" alignSelf="Center" />
+                        </layoutData>
+                        <customData>
+                            <core:CustomData key="satellites" value="true" writeToDom="{= ${satelliteCnt} > 0 }" />
+                        </customData>
+                    </Text>
+                </HBox>
             </Panel>
         </content>
     </Page>
