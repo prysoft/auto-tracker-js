@@ -50,7 +50,9 @@ sap.ui.define([
                     var unitIdx = getUnitIdxById(units, unitId);
                     oView.bindElement('/units/' + unitIdx);
 
-                    oView.getParent().getParent().getParent().byId('unitMap').panTo(unitId);
+                    setTimeout(function(){
+                        oView.getParent().getParent().getParent().byId('unitMap').panTo(unitId);
+                    }, 300);
                 });
             }, this);
         }

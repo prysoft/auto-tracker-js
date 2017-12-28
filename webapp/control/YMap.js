@@ -153,7 +153,33 @@ sap.ui.define([
         },
 
         panTo: function(geoObjectId) {
-            console.log('PAN_TO', geoObjectId);
+            var geoObjects = this.getGeoObjects();
+            for (var i = 0; i < geoObjects.length; i++) {
+                if (geoObjects[i].id == geoObjectId) {
+
+                    var yMap = this._yMap;
+                    yMap.setBounds(this._yMapObjectManager.getBounds()).then(function(){
+                        setTimeout(function(){
+                            yMap.panTo(geoObjects[i].geometry.coordinates).then(function(){
+                                setTimeout(function(){
+                                    var zoom = yMap.getZoom();
+                                    var opts = {duration: 700};
+                                    var maxZoom = 16;
+                                    var zoomFunc = function() {
+                                        if (zoom >= maxZoom) { return; }
+
+                                        zoom+= (maxZoom - zoom) > 4 ? 4 : (maxZoom - zoom);
+                                        yMap.setZoom(zoom, opts).then(zoomFunc);
+                                    };
+                                    zoomFunc();
+                                }, 500);
+                            });
+                        }, 1000);
+                    });
+
+                    return;
+                }
+            }
         }
 
     });
