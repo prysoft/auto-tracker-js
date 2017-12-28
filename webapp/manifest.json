@@ -51,7 +51,7 @@
       },
       "routes": [
         {"pattern": "", "name": "start", "target": "start"},
-        {"pattern": "unit/:unitIdx:", "name": "unitState", "target": "unitState"},
+        {"pattern": "unit/:unitId:", "name": "unitState", "target": "unitState"},
         {"pattern": "tech-state", "name": "techState", "target": "techState"}
       ],
       "targets": {

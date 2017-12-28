@@ -11,7 +11,8 @@ sap.ui.define([
         goToInfo: function(oEvent) {
             var oItem = oEvent.getParameter('listItem');
             this.getRouter().navTo("unitState",{
-                unitIdx : oItem.getParent().indexOfItem(oItem)
+                //unitIdx : oItem.getParent().indexOfItem(oItem)
+                unitId: oItem.getBindingContext().getProperty('id')
             });
         },
 
