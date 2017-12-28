@@ -55,7 +55,9 @@ sap.ui.define([
 
                 console.log(avlUnits);
 
+                //var timeZoneOffsetSeconds = new Date().getTimezoneOffset() * 60;
                 var units = [];
+                var ymapGeoObjects = [];
                 for (var i = 0; i < avlUnits.length; i++) {
                     //var unit = sess.getItem(units[i].getId()); // get unit by id
                     var unit = {
@@ -85,6 +87,27 @@ sap.ui.define([
 
                     var pos = avlUnits[i].getPosition();
                     if (pos) {
+                        // ymaps data begin ------------
+                        ymapGeoObjects.push({
+                            type: 'Feature',
+                            id: unit.id,
+                            geometry: {
+                                type: "Point",
+                                coordinates: [pos.y, pos.x]
+                            },
+                            options: {
+                                iconLayout: 'default#image',
+                                // Своё изображение иконки метки.
+                                iconImageHref: unit.icon,
+                                // Размеры метки.
+                                iconImageSize: [32, 32],
+                                // Смещение левого верхнего угла иконки относительно
+                                // её "ножки" (точки привязки).
+                                iconImageOffset: [-16, -16]
+                            }
+                        });
+                        // ymaps data end --------------
+
                         unit.lon = pos.x;
                         unit.lat = pos.y;
                         unit.alt = pos.z;
@@ -114,6 +137,7 @@ sap.ui.define([
                 console.log(units);
 
                 this.getView().getModel().setProperty('/units', units);
+                this.getView().getModel().setProperty('/ymapGeoObjects', ymapGeoObjects);
             }).bind(this));
         },
 

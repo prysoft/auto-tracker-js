@@ -11,7 +11,8 @@ sap.ui.define([
         metadata: {
             properties: {
                 "fitContainer" : {type : "boolean", defaultValue : false},
-                "showBackButton": {type : "boolean", defaultValue : false}
+                "showBackButton": {type : "boolean", defaultValue : false},
+                "geoObjects": "object"
             },
             /* aggregations: {
                 layoutData: {type: "sap.ui.core.LayoutData", multiple: false, visibility: "hidden"}
@@ -27,6 +28,15 @@ sap.ui.define([
         },
 
         init: function () {
+        },
+
+        setGeoObjects: function(newVal) {
+            this.setProperty('geoObjects', newVal, true);
+
+            if (newVal) {
+                this._yMapObjectManager.add({type: "FeatureCollection", features: newVal});
+                this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+            }
         },
 
         renderer: function (oRenderMgr, oControl) {
@@ -123,8 +133,27 @@ sap.ui.define([
 
                         this._yMap.controls.add(ymapNavBackBtn);
                     }
+
+                    // Создаем ObjectManager для объектов карты
+                    this._yMapObjectManager = new ymaps.ObjectManager({
+                        // Чтобы метки начали кластеризоваться, выставляем опцию.
+                        clusterize: true,
+                        // ObjectManager принимает те же опции, что и кластеризатор.
+                        gridSize: 32,
+                        clusterDisableClickZoom: true
+                    });
+
+                    // Чтобы задать опции одиночным объектам и кластерам,
+                    // обратимся к дочерним коллекциям ObjectManager.
+                    this._yMapObjectManager.objects.options.set('preset', 'islands#greenDotIcon');
+                    this._yMapObjectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+                    this._yMap.geoObjects.add(this._yMapObjectManager);
                 }
             }).bind(this));
+        },
+
+        panTo: function(geoObjectId) {
+            console.log('PAN_TO', geoObjectId);
         }
 
     });

@@ -1,7 +1,5 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.Home"
-          xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc"
-          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
           xmlns:pry="com.prysoft.sap.control"
           xmlns="sap.m">
 
@@ -13,7 +11,8 @@
                 <content>
                     <FlexBox fitContainer="true" direction="Column">
                         <items>
-                            <pry:YMap fitContainer="true" backButtonPress="backToMaster" showBackButton="{device>/system/phone}">
+                            <pry:YMap id="unitMap" geoObjects="{/ymapGeoObjects}"
+                                      fitContainer="true" backButtonPress="backToMaster" showBackButton="{device>/system/phone}">
                                 <pry:layoutData>
                                     <FlexItemData growFactor="1" />
                                 </pry:layoutData>
