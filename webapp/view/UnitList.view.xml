@@ -27,7 +27,7 @@
                                 <!--<Button type="Transparent" icon="sap-icon://locate-me" app:params="{id}" press="locateMe" />-->
                                 <!--<Text text="{path: 'date', type: 'sap.ui.model.type.Date', formatOptions: {style:'short'}}" />-->
                             </HBox>
-                            <Label text="{address}" class="vehicle-address position-absolute" />
+                            <Label text="{address}" class="text-small-italic position-absolute" />
                         </VBox>
                     </HBox>
                 </CustomListItem>

@@ -12,7 +12,7 @@
         <content>
             <Panel>
                 <VBox>
-                    <Label text="3 дня назад ({lastMsgTime})" class="vehicle-address">
+                    <Label text="{path: 'lastMsgTime', formatter: '.formatDateRelative'} ({path: 'lastMsgTime', type: 'sap.ui.model.type.Date', formatOptions:{pattern: 'dd.MM.yyyy HH:mm:ss'} })" class="text-small-italic sapUiTinyMarginBottom">
                         <layoutData>
                             <FlexItemData growFactor="1" alignSelf="End" />
                         </layoutData>
@@ -24,7 +24,7 @@
                             <Text text="{lat}" />
                         </VBox>
                     </HBox>
-                    <Label text="{address}" class="vehicle-address"/>
+                    <Label text="{address}" class="text-small-italic sapUiTinyMarginTop"/>
                 </VBox>
             </Panel>
             <Panel>

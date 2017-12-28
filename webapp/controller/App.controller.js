@@ -91,7 +91,12 @@ sap.ui.define([
                         unit.speed = pos.s;
                         unit.course = pos.c;
                         unit.satelliteCnt = pos.sc;
-                        unit.lastMsgTime = wialon.util.DateTime.formatTime(pos.t);
+                        try {
+                            var tzFormattedTime = wialon.util.DateTime.formatTime(pos.t).replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6.000+03:00');
+                            unit.lastMsgTime = new Date(Date.parse(tzFormattedTime));
+                        } catch(e) {
+                            unit.lastMsgTime = null;
+                        }
                         unit.address = '[Определение местоположения...]';
                         wialon.util.Gis.getLocations([{lon: pos.x, lat: pos.y}], (function(code, address){
                             if (code) {

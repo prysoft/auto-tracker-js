@@ -10,7 +10,7 @@
 .sap-ui-custom-extra .sapMLabel.vehicle-name {
     font-weight: bold;
 }
-.sap-ui-custom-extra .sapMLabel.vehicle-address {
+.sap-ui-custom-extra .sapMLabel.text-small-italic {
     font-style: italic;
     font-size: 0.7rem;
     line-height: 1.2rem;

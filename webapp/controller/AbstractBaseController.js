@@ -64,6 +64,52 @@ sap.ui.define([
             this.setCookie(name, '', options);
         },
 
+        formatDateRelative: function(date) {
+            if (Object.prototype.toString.call(date) !== '[object Date]') {
+                return;
+            }
+
+            var diff = new Date() - date; // разница в миллисекундах
+
+            if (diff < 1000) { // прошло менее 1 секунды
+                return 'только что';
+            }
+
+            var sec = Math.floor(diff / 1000); // округлить diff до секунд
+            if (sec < 60) {
+                return sec + ' сек. назад';
+            }
+
+            var min = Math.floor(diff / 60000); // округлить diff до минут
+            if (min < 60) {
+                return min + ' мин. назад';
+            }
+
+            var hr = Math.floor(diff / 3600000); // округлить diff до часов
+            if (hr < 24) {
+                return hr + ' ч. назад';
+            }
+
+            var days = Math.floor(diff / 86400000); // округлить diff до дней
+            if (days == 1) {
+                return 'вчера';
+            } else if (days < 7) {
+                return days + (days < 5 ? ' дня' : ' дней') + ' назад';
+            }
+
+            var wk = Math.floor(diff / 604800000); // округлить diff до недель
+            if (wk < 4) {
+                return wk + (wk < 2 ? ' неделя' : ' недели') + ' назад';
+            }
+
+            var mon = Math.floor(diff / (4 * 604800000)); // округлить diff до месяцев
+            if (mon < 7) {
+                return mon + ' мес. назад';
+            }
+
+            return 'давно';
+        },
+
         goBack: function (oEvent) {
             var oHistory, sPreviousHash;
 
