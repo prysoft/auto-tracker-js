@@ -37,9 +37,11 @@ sap.ui.define([
 
             var flags = wialon.util.Number.or(
                 wialon.item.Item.dataFlag.base,
+                wialon.item.Unit.dataFlag.sensors,
                 wialon.item.Unit.dataFlag.lastMessage);
 
             sess.loadLibrary("itemIcon");
+            sess.loadLibrary("unitSensors"); // load Sensor Library
 
             sess.updateDataFlags([{type: "type", data: "avl_unit", flags: flags, mode: 0}], (function (code) {
                 if (code) {
@@ -131,6 +133,18 @@ sap.ui.define([
                     } else {
                         unit.address = '[Местоположение не известно]';
                     }
+
+                    var sensors = [];
+                    var avlSensors = avlUnits[i].getSensors();
+                    for(var prop in avlSensors) {
+                        var avlSensor = avlSensors[prop];
+                        sensors.push({
+                            id: avlSensor.id,
+                            name: avlSensor.n,
+                            measure: avlSensor.m // TODO correct according to avlSensor.t
+                        });
+                    }
+                    unit.sensors = sensors;
 
                     units.push(unit);
                 }

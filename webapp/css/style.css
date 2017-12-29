@@ -16,6 +16,20 @@
     line-height: 1.2rem;
 }
 
+/* Sensor List */
+.sap-ui-custom-extra .sapMList.sensor-list .sapMLIB {
+    height: 2rem;
+}
+.sap-ui-custom-extra .sapMList.sensor-list .sapMLIBContent {
+    line-height: 2rem;
+}
+.sap-ui-custom-extra .sapMList.sensor-list .sapMLIBContent .sapMDLILabel {
+    font-size: 0.875rem;
+}
+.sap-ui-custom-extra .sapMList.sensor-list .sapMLIB:nth-child(even) {
+    background-color: #ebebeb;
+}
+
 /* Side menu begin */
 .sap-ui-custom-extra.sap-phone .sapTntToolPageAsideCollapsed .sapTntToolPageAside {
     -webkit-transform: translateX(-3rem);

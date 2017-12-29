@@ -63,6 +63,9 @@
                     </Text>
                 </HBox>
             </Panel>
+            <List items="{path: 'sensors'}" showNoData="false" class="sensor-list">
+                <DisplayListItem label="{name}" value="{measure}"/>
+            </List>
         </content>
     </Page>
 
