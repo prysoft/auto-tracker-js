@@ -30,7 +30,9 @@
         <detailPages>
             <Page title="Тех. состояние. Заголовок 1" class="sapUiStdPage">
                 <content>
-                    <Label text="ДЕТАЛЬНАЯ ИНФОРМАЦИЯ" />
+                    <FlexBox fitContainer="true" alignItems="Center" justifyContent="Center">
+                        <Panel id="fuelchart"></Panel>
+                    </FlexBox>
                 </content>
             </Page>
         </detailPages>

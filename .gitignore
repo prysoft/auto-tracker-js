@@ -82,6 +82,9 @@ fabric.properties
 # OpenUI5 runtime
 /openui5-runtime-1.50.5/
 
+# OpenUI5 extra modules
+/openui5-simplecharts/
+
 # Some custom project ignores
 launch.ant
 start.bat

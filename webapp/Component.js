@@ -21,6 +21,9 @@ sap.ui.define([
         init : function () {
             UIComponent.prototype.init.apply(this, arguments);
 
+            sap.ui.getCore().loadLibrary("openui5.simplecharts", "./openui5-simplecharts/src/openui5/simplecharts/");
+            jQuery.sap.registerModulePath('bower_component', './openui5-simplecharts/bower_components');
+
             this.getRouter().attachRouteMatched(function(evt){
                 requestedTarget = evt.getParameter('name');
                 if (!isAuthorized) {
