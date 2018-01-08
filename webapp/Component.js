@@ -39,10 +39,12 @@ sap.ui.define([
 
             // set data model
             var oData = {
-                recipient : {
-                    name : 'World'
-                },
-                files: []
+                periodCombo: [
+                    {key: 't', text: 'Сегодня'},
+                    {key: 'y', text: 'Вчера'},
+                    {key: 'w', text: 'За неделю'},
+                    {key: 'm', text: 'За месяц'}
+                ]
             };
             var oModel = new JSONModel(oData);
             this.setModel(oModel);
