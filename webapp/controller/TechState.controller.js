@@ -30,8 +30,8 @@ sap.ui.define([
             });
             chart.setDataSet(oDataset);
 
-            var panel = this.getView().byId('fuelchart');
-            panel.addContent(chart);
+            var flexBox = this.getView().byId('fuelchart');
+            flexBox.addItem(chart);
         }
     });
 });

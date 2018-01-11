@@ -1,6 +1,7 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.TechState"
           xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc"
+          xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
           xmlns="sap.m">
 
     <SplitContainer mode="StretchCompressMode">
@@ -16,7 +17,7 @@
                 <content>
                     <List items="{path: '/units'}" itemPress="goToTechDetails">
                         <items>
-                            <StandardListItem
+                            <StandardListItem type="Active" app:idx="{id}"
                                     title="{name}"
                                     description="{address}"
                                     icon="{icon}"
@@ -28,11 +29,9 @@
             </Page>
         </masterPages>
         <detailPages>
-            <Page title="Тех. состояние. Заголовок 1" class="sapUiStdPage">
+            <Page title="Топливо" class="sapUiStdPage">
                 <content>
-                    <FlexBox fitContainer="true" alignItems="Center" justifyContent="Center">
-                        <Panel id="fuelchart"></Panel>
-                    </FlexBox>
+                    <FlexBox id="fuelchart" fitContainer="true" alignItems="Center" justifyContent="Center" />
                 </content>
             </Page>
         </detailPages>

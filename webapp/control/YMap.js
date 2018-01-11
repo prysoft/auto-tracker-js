@@ -33,7 +33,7 @@ sap.ui.define([
         setGeoObjects: function(newVal) {
             this.setProperty('geoObjects', newVal, true);
 
-            if (newVal) {
+            if (newVal && this._yMapObjectManager) {
                 this._yMapObjectManager.add({type: "FeatureCollection", features: newVal});
                 this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
             }
@@ -147,6 +147,13 @@ sap.ui.define([
                     // обратимся к дочерним коллекциям ObjectManager.
                     this._yMapObjectManager.objects.options.set('preset', 'islands#greenDotIcon');
                     this._yMapObjectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+                    var geoObjects = this.getGeoObjects();
+                    if (geoObjects) {
+                        setTimeout((function(){
+                            this._yMapObjectManager.add({type: "FeatureCollection", features: geoObjects});
+                            this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+                        }).bind(this));
+                    }
                     this._yMap.geoObjects.add(this._yMapObjectManager);
                 }
             }).bind(this));
