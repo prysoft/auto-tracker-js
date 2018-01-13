@@ -123,15 +123,15 @@ sap.ui.define([
             }
         },
 
-        doAjax : function(path, content, type, async) {
+        doAjax : function(url, content, method, async) {
             var params = {
-                url : 'http://localhost:8080' + path,
+                url : url,
                 dataType : 'json',
                 contentType : 'application/json; charset=utf-8',
                 context : this,
                 cache : false
             };
-            params['type'] = type || 'POST';
+            params['type'] = method || 'POST';
             if (async === false) {
                 params['async'] = async;
             }

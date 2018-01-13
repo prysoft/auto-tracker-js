@@ -138,12 +138,26 @@ sap.ui.define([
                     var avlSensors = avlUnits[i].getSensors();
                     for(var prop in avlSensors) {
                         var avlSensor = avlSensors[prop];
+                        var val = avlUnits[i].calculateSensorValue(avlSensor, lastMsg);
                         sensors.push({
                             id: avlSensor.id,
                             name: avlSensor.n,
-                            measure: avlSensor.m // TODO correct according to avlSensor.t
+                            measure: avlSensor.m, // TODO correct according to avlSensor.t
+                            value: val == -348201.3876 ? null : val
                         });
                     }
+
+                    var lastMsgUnitsFn = function(sensors) {
+                        return function(data){
+                            for (var i = 0; i < sensors.length; i++) {
+                                if (sensors[i].id in data) {
+                                    var val = data[sensors[i].id];
+                                    sensors[i].value = val == -348201.3876 ? null : val;
+                                }
+                            }
+                        }
+                    };
+                    this.doAjax('https://hst-api.wialon.com/wialon/ajax.html?svc=unit/calc_last_message&params={"unitId":' + unit.id + ', "flags":1}&sid=' + sess.getId(), null, 'POST').done(lastMsgUnitsFn(sensors));
                     unit.sensors = sensors;
 
                     units.push(unit);
