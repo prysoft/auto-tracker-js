@@ -143,21 +143,30 @@ sap.ui.define([
                             id: avlSensor.id,
                             name: avlSensor.n,
                             measure: avlSensor.m, // TODO correct according to avlSensor.t
-                            value: val == -348201.3876 ? null : val
+                            value: val == wialon.item.MUnitSensor.invalidValue ? null : val
                         });
                     }
 
                     var lastMsgUnitsFn = function(sensors) {
-                        return function(data){
+                        return function(code, data){
+                            if (code) {
+                                console.error(wialon.core.Errors.getErrorText(code));
+                                return;
+                            }
                             for (var i = 0; i < sensors.length; i++) {
                                 if (sensors[i].id in data) {
                                     var val = data[sensors[i].id];
-                                    sensors[i].value = val == -348201.3876 ? null : val;
+                                    sensors[i].value = val == wialon.item.MUnitSensor.invalidValue ? null : val;
                                 }
                             }
                         }
                     };
-                    this.doAjax('https://hst-api.wialon.com/wialon/ajax.html?svc=unit/calc_last_message&params={"unitId":' + unit.id + ', "flags":1}&sid=' + sess.getId(), null, 'POST').done(lastMsgUnitsFn(sensors));
+                    var rc = wialon.core.Remote.getInstance(); // get instance of remote connection
+                    rc.remoteCall('unit/calc_last_message', {
+                        unitId: unit.id,
+                        flags: 1
+                    }, lastMsgUnitsFn(sensors));
+
                     unit.sensors = sensors;
 
                     units.push(unit);

@@ -9,7 +9,7 @@
             <Page title="{i18n>tTechState}" class="sapUiStdPage">
                 <subHeader>
                     <Toolbar>
-                        <ComboBox items="{ path: '/periodCombo' }" width="100%">
+                        <ComboBox id="cmbPeriod" items="{ path: '/periodCombo' }" selectionChange="cmbPeriodChange" width="100%">
                             <core:Item key="{key}" text="{text}" />
                         </ComboBox>
                     </Toolbar>

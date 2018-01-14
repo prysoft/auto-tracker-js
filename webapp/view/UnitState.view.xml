@@ -20,8 +20,8 @@
                     <HBox>
                         <core:Icon size="2rem" src="sap-icon://map"/>
                         <VBox class="sapUiSmallMarginBeginEnd">
-                            <Text text="{lon}" />
                             <Text text="{lat}" />
+                            <Text text="{lon}" />
                         </VBox>
                     </HBox>
                     <Label text="{address}" class="text-small-italic sapUiTinyMarginTop"/>

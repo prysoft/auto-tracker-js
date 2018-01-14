@@ -32,6 +32,16 @@ sap.ui.define([
 
             var flexBox = this.getView().byId('fuelchart');
             flexBox.addItem(chart);
+
+            setTimeout((function(){
+                var cmbPeriod = this.getView().byId('cmbPeriod');
+                cmbPeriod.setSelectedItem(cmbPeriod.getFirstItem());
+            }).bind(this));
+        },
+
+        cmbPeriodChange: function(oEvt) {
+            var selectedItem = oEvt.getParameter('selectedItem');
+            console.log('Selected item: ' + selectedItem.getKey() + ' -> ' + selectedItem.getText());
         }
     });
 });
