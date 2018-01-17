@@ -63,8 +63,14 @@
                     </Text>
                 </HBox>
             </Panel>
-            <List items="{path: 'sensors'}" showNoData="false" class="sensor-list">
-                <DisplayListItem label="{name}" value="{= ${value} === null ? '---' : !RegExp('^on\/off$', 'i').test(${measure}) ? ${value} + ' ' + ${measure} : ${value} === 1 ? 'Вкл' : 'Выкл' }"/>
+            <List items="{ path: 'sensors', sorter: {path: 'order'}, filters:[{path: 'visible', operator: 'EQ', value1: true}] }" showNoData="false" class="sensor-list">
+                <DisplayListItem label="{name}"
+                                 value="{= ${value} === null ? '---' : !RegExp('^on\/off$', 'i').test(${measure}) ? ${value} + ' ' + ${measure} : ${value} === 1 ? 'Вкл' : 'Выкл' }"
+                                 class="text-color-engine-sens">
+                    <customData>
+                        <core:CustomData key="engine-on" value="val{value}" writeToDom="{= RegExp('^on\/off$', 'i').test(${measure}) }" />
+                    </customData>
+                </DisplayListItem>
             </List>
         </content>
     </Page>

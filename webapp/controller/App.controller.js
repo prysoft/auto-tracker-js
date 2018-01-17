@@ -138,6 +138,10 @@ sap.ui.define([
                     var avlSensors = avlUnits[i].getSensors();
                     for(var prop in avlSensors) {
                         var avlSensor = avlSensors[prop];
+                        var sensViewParams = {}; // Default values
+                        try {
+                            sensViewParams = JSON.parse(avlSensor.c);
+                        } catch (e){}
                         var val = avlUnits[i].calculateSensorValue(avlSensor, lastMsg);
                         sensors.push({
                             id: avlSensor.id,
@@ -145,6 +149,8 @@ sap.ui.define([
                             param: avlSensor.p, // Parameter name in messages
                             type: avlSensor.t,  // Sensor type
                             measure: avlSensor.m,
+                            visible: !!sensViewParams.appear_in_popup,
+                            order: sensViewParams.pos || null,
                             value: val == wialon.item.MUnitSensor.invalidValue ? null : val
                         });
                     }
