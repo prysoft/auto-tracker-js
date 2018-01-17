@@ -142,7 +142,9 @@ sap.ui.define([
                         sensors.push({
                             id: avlSensor.id,
                             name: avlSensor.n,
-                            measure: avlSensor.m, // TODO correct according to avlSensor.t
+                            param: avlSensor.p, // Parameter name in messages
+                            type: avlSensor.t,  // Sensor type
+                            measure: avlSensor.m,
                             value: val == wialon.item.MUnitSensor.invalidValue ? null : val
                         });
                     }

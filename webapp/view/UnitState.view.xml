@@ -64,7 +64,7 @@
                 </HBox>
             </Panel>
             <List items="{path: 'sensors'}" showNoData="false" class="sensor-list">
-                <DisplayListItem label="{name}" value="{= ${value} === null ? '---' : ${value} + ' ' + ${measure} }"/>
+                <DisplayListItem label="{name}" value="{= ${value} === null ? '---' : !RegExp('^on\/off$', 'i').test(${measure}) ? ${value} + ' ' + ${measure} : ${value} === 1 ? 'Вкл' : 'Выкл' }"/>
             </List>
         </content>
     </Page>
