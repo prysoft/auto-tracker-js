@@ -189,9 +189,11 @@ sap.ui.define([
                     }
                     this.removeCookie('access_token', '/');
                     this.getOwnerComponent().setAuthorized(false);
-                    /*setTimeout((function(){
-                        this.getView().byId('auth-remote').$()[0].contentWindow.history.back();
-                    }).bind(this), 0);*/
+                    setTimeout((function(){
+                        //this.getView().byId('auth-remote').$()[0].contentWindow.history.back();
+                        // Удаляем объекты с карты
+                        this.getOwnerComponent().getModel().setProperty('/ymapGeoObjects', null);
+                    }).bind(this), 700); // TODO Привязка к завершению анимации
                 }).bind(this));
             }
         }

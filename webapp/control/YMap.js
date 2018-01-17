@@ -33,9 +33,12 @@ sap.ui.define([
         setGeoObjects: function(newVal) {
             this.setProperty('geoObjects', newVal, true);
 
-            if (newVal && this._yMapObjectManager) {
-                this._yMapObjectManager.add({type: "FeatureCollection", features: newVal});
-                this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+            if (this._yMapObjectManager) {
+                this._yMapObjectManager.removeAll();
+                if (newVal) {
+                    this._yMapObjectManager.add({type: "FeatureCollection", features: newVal});
+                    this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+                }
             }
         },
 
