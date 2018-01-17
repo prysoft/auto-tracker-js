@@ -164,3 +164,31 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
 
 .text-color-engine-sens[data-engine-on="val0"] .sapMDLIValue { color: #800000; }
 .text-color-engine-sens[data-engine-on="val1"] .sapMDLIValue { color: #008000; }
+
+/* Анимация для активного объекта на карте */
+.ymap-active-obj {
+    border: 2px solid #99ff00;
+    border-radius: 30px;
+    -webkit-border-radius: 30px;
+    height: 12px;
+    width: 12px;
+    position: absolute;
+    left:-1px;
+    top:1px;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+    -webkit-animation: pulsate 1s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    opacity: 0.0;
+}
+
+@keyframes pulsate {
+    0% {transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {transform: scale(1.2, 1.2); opacity: 0.0;}
+}
+@-webkit-keyframes pulsate {
+    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
+}

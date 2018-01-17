@@ -30,16 +30,35 @@ sap.ui.define([
         init: function () {
         },
 
-        setGeoObjects: function(newVal) {
-            this.setProperty('geoObjects', newVal, true);
+        animateObject: function(objId) {
+            var ymapUnit = this._yMapObjectManager.objects.getById(objId);
+            console.log('ANIMATE', ymapUnit, this._yMap);
+        },
 
+        _addGeoObjectsToMap: function(geoObjects) {
+            if (geoObjects) {
+                var unitIconContentLayout = ymaps.templateLayoutFactory.createClass([
+                    '<div class="ymap-active-obj" style="width:32px;height:32px;"></div>'
+                ].join(''));
+                for (var i = 0; geoObjects && i < geoObjects.length; i++) {
+                    geoObjects[i].options.iconLayout = 'default#imageWithContent';
+                    //geoObjects[i].options.iconContentOffset = [16, 16];
+                    geoObjects[i].options.iconContentLayout = unitIconContentLayout;
+                }
+                console.log('unitIconContentLayout', unitIconContentLayout, geoObjects);
+
+                this._yMapObjectManager.add({type: "FeatureCollection", features: geoObjects});
+                this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+            }
+        },
+
+        setGeoObjects: function(newVal) {
             if (this._yMapObjectManager) {
                 this._yMapObjectManager.removeAll();
-                if (newVal) {
-                    this._yMapObjectManager.add({type: "FeatureCollection", features: newVal});
-                    this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
-                }
+                this._addGeoObjectsToMap(newVal);
             }
+
+            this.setProperty('geoObjects', newVal, true);
         },
 
         renderer: function (oRenderMgr, oControl) {
@@ -150,13 +169,9 @@ sap.ui.define([
                     // обратимся к дочерним коллекциям ObjectManager.
                     this._yMapObjectManager.objects.options.set('preset', 'islands#greenDotIcon');
                     this._yMapObjectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
-                    var geoObjects = this.getGeoObjects();
-                    if (geoObjects) {
-                        setTimeout((function(){
-                            this._yMapObjectManager.add({type: "FeatureCollection", features: geoObjects});
-                            this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
-                        }).bind(this));
-                    }
+                    setTimeout((function(){
+                        this._addGeoObjectsToMap(this.getGeoObjects());
+                    }).bind(this));
                     this._yMap.geoObjects.add(this._yMapObjectManager);
                 }
             }).bind(this));
@@ -167,6 +182,7 @@ sap.ui.define([
             for (var i = 0; i < geoObjects.length; i++) {
                 if (geoObjects[i].id == geoObjectId) {
 
+                    var _this = this;
                     var yMap = this._yMap;
                     yMap.setBounds(this._yMapObjectManager.getBounds()).then(function(){
                         setTimeout(function(){
@@ -182,6 +198,7 @@ sap.ui.define([
                                         yMap.setZoom(zoom, opts).then(zoomFunc);
                                     };
                                     zoomFunc();
+                                    _this.animateObject(geoObjectId)
                                 }, 500);
                             });
                         }, 1000);
