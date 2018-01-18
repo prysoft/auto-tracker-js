@@ -3,8 +3,9 @@
  */
 
 sap.ui.define([
-    "sap/ui/core/Control"
-], function (Control) {
+    "sap/ui/core/Control",
+    'jquery.sap.global'
+], function (Control, $) {
     "use strict";
 
     return Control.extend("com.prysoft.sap.control.YMap", {
@@ -30,15 +31,37 @@ sap.ui.define([
         init: function () {
         },
 
+        _getAnimationContent: function(objId) {
+            var objOverlay = this._yMapObjectManager.objects.overlays.getById(objId);
+            if (!objOverlay) {
+                return $([]);
+            }
+            var iconLayout = objOverlay.getIconLayoutSync();
+            if (!iconLayout) {
+                return $([]);
+            }
+            return $(iconLayout.getElement()).find('.ymap-obj-animation-content');
+        },
+
+        startObjectAnimation: function(objId) {
+            this._getAnimationContent(objId).addClass('ymap-active-obj');
+        },
+
+        stopObjectAnimation: function(objId) {
+            this._getAnimationContent(objId).removeClass('ymap-active-obj');
+        },
+
         animateObject: function(objId) {
-            var ymapUnit = this._yMapObjectManager.objects.getById(objId);
-            console.log('ANIMATE', ymapUnit, this._yMap);
+            this.startObjectAnimation(objId);
+            setTimeout((function(){
+                this.stopObjectAnimation(objId);
+            }).bind(this), 7000);
         },
 
         _addGeoObjectsToMap: function(geoObjects) {
             if (geoObjects) {
                 var unitIconContentLayout = ymaps.templateLayoutFactory.createClass([
-                    '<div class="ymap-active-obj" style="width:32px;height:32px;"></div>'
+                    '<div class="ymap-obj-animation-content" style="width:32px;height:32px;"></div>'
                 ].join(''));
                 for (var i = 0; geoObjects && i < geoObjects.length; i++) {
                     geoObjects[i].options.iconLayout = 'default#imageWithContent';
@@ -192,13 +215,15 @@ sap.ui.define([
                                     var opts = {duration: 700};
                                     var maxZoom = 16;
                                     var zoomFunc = function() {
-                                        if (zoom >= maxZoom) { return; }
+                                        if (zoom >= maxZoom) {
+                                            _this.animateObject(geoObjectId);
+                                            return;
+                                        }
 
                                         zoom+= (maxZoom - zoom) > 4 ? 4 : (maxZoom - zoom);
                                         yMap.setZoom(zoom, opts).then(zoomFunc);
                                     };
                                     zoomFunc();
-                                    _this.animateObject(geoObjectId)
                                 }, 500);
                             });
                         }, 1000);
