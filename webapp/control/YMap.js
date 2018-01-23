@@ -8,6 +8,54 @@ sap.ui.define([
 ], function (Control, $) {
     "use strict";
 
+    var unitIconContentLayout;
+
+    var GeoObjectEx = function(geoObjectConfig){
+        if (!unitIconContentLayout) {
+            unitIconContentLayout = ymaps.templateLayoutFactory.createClass([
+                '<div class="ymap-obj-animation-content" style="width:32px;height:32px;"></div>'
+            ].join(''));
+        }
+        geoObjectConfig.options.iconLayout = 'default#imageWithContent';
+        //geoObjectConfig.options.iconContentOffset = [16, 16];
+        geoObjectConfig.options.iconContentLayout = unitIconContentLayout;
+
+        var ymapsGeoObject = new ymaps.GeoObject(geoObjectConfig.feature, geoObjectConfig.options);
+
+        ymapsGeoObject.moveTo = function(coords){
+            ymapsGeoObject.geometry.setCoordinates(coords);
+        };
+
+        ymapsGeoObject._getAnimationContent = function() {
+            var objOverlay = ymapsGeoObject.getOverlaySync();
+            if (!objOverlay) {
+                return $([]);
+            }
+            var iconLayout = objOverlay.getIconLayoutSync();
+            if (!iconLayout) {
+                return $([]);
+            }
+            return $(iconLayout.getElement()).find('.ymap-obj-animation-content');
+        };
+
+        ymapsGeoObject.startObjectAnimation = function() {
+            this._getAnimationContent().addClass('ymap-active-obj');
+        };
+
+            ymapsGeoObject.stopObjectAnimation = function() {
+            this._getAnimationContent().removeClass('ymap-active-obj');
+        };
+
+        ymapsGeoObject.animateObject = function() {
+            this.startObjectAnimation();
+            setTimeout((function(){
+                this.stopObjectAnimation();
+            }).bind(this), 7000);
+        };
+
+        return ymapsGeoObject;
+    };
+
     return Control.extend("com.prysoft.sap.control.YMap", {
         metadata: {
             properties: {
@@ -28,56 +76,50 @@ sap.ui.define([
             }
         },
 
+        findGeoObjectById: function(id){
+            var obj = null;
+            this._yMapGeoObjects && this._yMapGeoObjects.each(function(geoObject){
+                if (geoObject.properties.get('id') == id) {
+                    obj = geoObject;
+                    return false;
+                }
+            }, this);
+            return obj;
+        },
+
         init: function () {
-        },
+            var oEventBus = sap.ui.getCore().getEventBus();
+            oEventBus.subscribe('sap.global', 'wialonMessageRegistered', function(channelId, eventId, dataMap){
+                if (!this._yMap || !dataMap.data || !dataMap.data.pos) {
+                    return;
+                }
 
-        _getAnimationContent: function(objId) {
-            var objOverlay = this._yMapObjectManager.objects.overlays.getById(objId);
-            if (!objOverlay) {
-                return $([]);
-            }
-            var iconLayout = objOverlay.getIconLayoutSync();
-            if (!iconLayout) {
-                return $([]);
-            }
-            return $(iconLayout.getElement()).find('.ymap-obj-animation-content');
-        },
-
-        startObjectAnimation: function(objId) {
-            this._getAnimationContent(objId).addClass('ymap-active-obj');
-        },
-
-        stopObjectAnimation: function(objId) {
-            this._getAnimationContent(objId).removeClass('ymap-active-obj');
-        },
-
-        animateObject: function(objId) {
-            this.startObjectAnimation(objId);
-            setTimeout((function(){
-                this.stopObjectAnimation(objId);
-            }).bind(this), 7000);
+                var geoObj = this.findGeoObjectById(dataMap.unitId);
+                if (geoObj) {
+                    geoObj.animateObject();
+                    geoObj.moveTo([dataMap.data.pos.y, dataMap.data.pos.x]);
+                }
+            }, this);
         },
 
         _addGeoObjectsToMap: function(geoObjects) {
             if (geoObjects) {
-                var unitIconContentLayout = ymaps.templateLayoutFactory.createClass([
-                    '<div class="ymap-obj-animation-content" style="width:32px;height:32px;"></div>'
-                ].join(''));
+                this._yMapGeoObjects = new ymaps.GeoObjectCollection();
                 for (var i = 0; geoObjects && i < geoObjects.length; i++) {
-                    geoObjects[i].options.iconLayout = 'default#imageWithContent';
-                    //geoObjects[i].options.iconContentOffset = [16, 16];
-                    geoObjects[i].options.iconContentLayout = unitIconContentLayout;
+                    this._yMapGeoObjects.add(new GeoObjectEx(geoObjects[i]));
                 }
-                console.log('unitIconContentLayout', unitIconContentLayout, geoObjects);
 
-                this._yMapObjectManager.add({type: "FeatureCollection", features: geoObjects});
-                this._yMap.setBounds(this._yMapObjectManager.getBounds()/*, {checkZoomRange:true}*/);
+                this._yMap.geoObjects.add(this._yMapGeoObjects);
+                this._yMap.setBounds(this._yMapGeoObjects.getBounds()/*, {checkZoomRange:true}*/);
             }
         },
 
         setGeoObjects: function(newVal) {
-            if (this._yMapObjectManager) {
-                this._yMapObjectManager.removeAll();
+            if (this._yMap) {
+                if (this._yMapGeoObjects) {
+                    this._yMap.geoObjects.remove(this._yMapGeoObjects);
+                    this._yMapGeoObjects = null;
+                }
                 this._addGeoObjectsToMap(newVal);
             }
 
@@ -179,58 +221,38 @@ sap.ui.define([
                         this._yMap.controls.add(ymapNavBackBtn);
                     }
 
-                    // Создаем ObjectManager для объектов карты
-                    this._yMapObjectManager = new ymaps.ObjectManager({
-                        // Чтобы метки начали кластеризоваться, выставляем опцию.
-                        clusterize: true,
-                        // ObjectManager принимает те же опции, что и кластеризатор.
-                        gridSize: 32,
-                        clusterDisableClickZoom: true
-                    });
-
-                    // Чтобы задать опции одиночным объектам и кластерам,
-                    // обратимся к дочерним коллекциям ObjectManager.
-                    this._yMapObjectManager.objects.options.set('preset', 'islands#greenDotIcon');
-                    this._yMapObjectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
                     setTimeout((function(){
                         this._addGeoObjectsToMap(this.getGeoObjects());
                     }).bind(this));
-                    this._yMap.geoObjects.add(this._yMapObjectManager);
                 }
             }).bind(this));
         },
 
         panTo: function(geoObjectId) {
-            var geoObjects = this.getGeoObjects();
-            for (var i = 0; i < geoObjects.length; i++) {
-                if (geoObjects[i].id == geoObjectId) {
+            var geoObj = this.findGeoObjectById(geoObjectId);
+            if (geoObj) {
+                var yMap = this._yMap;
+                yMap.setBounds(this._yMapGeoObjects.getBounds()).then(function(){
+                    setTimeout(function(){
+                        yMap.panTo(geoObj.geometry.getCoordinates()).then(function(){
+                            setTimeout(function(){
+                                var zoom = yMap.getZoom();
+                                var opts = {duration: 700};
+                                var maxZoom = 16;
+                                var zoomFunc = function() {
+                                    if (zoom >= maxZoom) {
+                                        geoObj.animateObject();
+                                        return;
+                                    }
 
-                    var _this = this;
-                    var yMap = this._yMap;
-                    yMap.setBounds(this._yMapObjectManager.getBounds()).then(function(){
-                        setTimeout(function(){
-                            yMap.panTo(geoObjects[i].geometry.coordinates).then(function(){
-                                setTimeout(function(){
-                                    var zoom = yMap.getZoom();
-                                    var opts = {duration: 700};
-                                    var maxZoom = 16;
-                                    var zoomFunc = function() {
-                                        if (zoom >= maxZoom) {
-                                            _this.animateObject(geoObjectId);
-                                            return;
-                                        }
-
-                                        zoom+= (maxZoom - zoom) > 4 ? 4 : (maxZoom - zoom);
-                                        yMap.setZoom(zoom, opts).then(zoomFunc);
-                                    };
-                                    zoomFunc();
-                                }, 500);
-                            });
-                        }, 1000);
-                    });
-
-                    return;
-                }
+                                    zoom+= (maxZoom - zoom) > 4 ? 4 : (maxZoom - zoom);
+                                    yMap.setZoom(zoom, opts).then(zoomFunc);
+                                };
+                                zoomFunc();
+                            }, 500);
+                        });
+                    }, 1000);
+                });
             }
         }
 

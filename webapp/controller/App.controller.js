@@ -4,6 +4,37 @@ sap.ui.define([
 ], function (Controller, MessageToast) {
     'use strict';
 
+    var updateUnit = function(unit, position, updateTime) {
+        if (!unit) {
+            return;
+        }
+
+        unit.lon = position.x;
+        unit.lat = position.y;
+        unit.alt = position.z;
+        unit.speed = position.s;
+        unit.course = position.c;
+        unit.satelliteCnt = position.sc;
+        try {
+            var tzFormattedTime = wialon.util.DateTime.formatTime(updateTime).replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6.000+03:00');
+            unit.lastMsgTime = new Date(Date.parse(tzFormattedTime));
+        } catch(e) {
+            unit.lastMsgTime = null;
+        }
+
+        return unit;
+    };
+
+    var resolveAddress = function(unit, model, modelIdx) {
+        wialon.util.Gis.getLocations([{lon: unit.lon, lat: unit.lat}], (function(code, address){
+            if (code) {
+                console.error(wialon.core.Errors.getErrorText(code));
+                return;
+            }
+            this.oModel.setProperty('/units/' + this.arrIdx + '/address', address);
+        }).bind({oModel: model, arrIdx: modelIdx}));
+    };
+
     return Controller.extend('com.prysoft.autotracker.controller.App', {
         onInit: function(){
             console.log('APP_INIT');
@@ -91,11 +122,14 @@ sap.ui.define([
                     if (pos) {
                         // ymaps data begin ------------
                         ymapGeoObjects.push({
-                            type: 'Feature',
-                            id: unit.id,
-                            geometry: {
-                                type: "Point",
-                                coordinates: [pos.y, pos.x]
+                            feature: {
+                                geometry: {
+                                    type: "Point",
+                                    coordinates: [pos.y, pos.x]
+                                },
+                                properties: {
+                                    id: unit.id
+                                }
                             },
                             options: {
                                 iconLayout: 'default#image',
@@ -110,26 +144,9 @@ sap.ui.define([
                         });
                         // ymaps data end --------------
 
-                        unit.lon = pos.x;
-                        unit.lat = pos.y;
-                        unit.alt = pos.z;
-                        unit.speed = pos.s;
-                        unit.course = pos.c;
-                        unit.satelliteCnt = pos.sc;
-                        try {
-                            var tzFormattedTime = wialon.util.DateTime.formatTime(pos.t).replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6.000+03:00');
-                            unit.lastMsgTime = new Date(Date.parse(tzFormattedTime));
-                        } catch(e) {
-                            unit.lastMsgTime = null;
-                        }
+                        updateUnit(unit, pos, pos.t);
                         unit.address = '[Определение местоположения...]';
-                        wialon.util.Gis.getLocations([{lon: pos.x, lat: pos.y}], (function(code, address){
-                            if (code) {
-                                console.error(wialon.core.Errors.getErrorText(code));
-                                return;
-                            }
-                            this.oModel.setProperty('/units/' + this.arrIdx + '/address', address);
-                        }).bind({oModel: this.getView().getModel(), arrIdx: i}));
+                        resolveAddress(unit, this.getView().getModel(), i);
                     } else {
                         unit.address = '[Местоположение не известно]';
                     }
@@ -178,6 +195,37 @@ sap.ui.define([
                     unit.sensors = sensors;
 
                     units.push(unit);
+
+                    var updateUnitStateOnMessage = function(msgEvt) {
+                        // Updating the application model
+                        var avlUnit = msgEvt.getTarget();
+                        var avlUnitId = avlUnit.getId();
+                        var data = msgEvt.getData();
+
+                        var updatedUnit = null;
+                        var updatedUnitIdx;
+                        for (updatedUnitIdx = 0; updatedUnitIdx < units.length; updatedUnitIdx++) {
+                            if (units[updatedUnitIdx].id == avlUnitId) {
+                                updatedUnit = units[updatedUnitIdx];
+                                break;
+                            }
+                        }
+                        if (!updatedUnit || !data.pos) {
+                            return;
+                        }
+
+                        var oModel = this.getOwnerComponent().getModel();
+                        oModel.setProperty('/units/' + updatedUnitIdx, updateUnit(updatedUnit, data.pos, data.t));
+                        resolveAddress(updatedUnit, oModel, updatedUnitIdx);
+
+                        // Notifying the map
+                        var oEventBus = sap.ui.getCore().getEventBus();
+                        oEventBus.publish('sap.global', 'wialonMessageRegistered', {
+                            unitId: avlUnitId,
+                            data: data
+                        });
+                    };
+                    avlUnits[i].addListener('messageRegistered', (updateUnitStateOnMessage).bind(this)); // register handler envoked on receiving a message
                 }
                 console.log(units);
 
