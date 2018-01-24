@@ -38,15 +38,22 @@ sap.ui.define([
         };
 
         ymapsGeoObject.moveTo = function(coords, completeCallback){
-            if (!moveCoords.length) {
-                timer = setInterval(moveCallback, 10);
+            var oldCoords;
+            if (moveCoords.length) {
+                var lastCoords = moveCoords[moveCoords.length - 1];
+                oldCoords = [lastCoords[0], lastCoords[1]];
+            } else {
+                oldCoords = ymapsGeoObject.geometry.getCoordinates();
+                timer = setInterval(moveCallback, 20);
             }
-            var stepCount = 20; // Зависит от расстояния
-            var oldCoords = ymapsGeoObject.geometry.getCoordinates();
+            var stepCount = 30; // TODO Реализовать зависимость кол-ва промежуточных позиций от расстояния
             var latStep = (coords[0] - oldCoords[0]) / stepCount;
             var lonStep = (coords[1] - oldCoords[1]) / stepCount;
             var i;
             for(i = 0; i < stepCount; i++) {
+                if (Math.abs(coords[0] - oldCoords[0]) <= latStep || Math.abs(coords[1] - oldCoords[1]) <= lonStep) {
+                    break;
+                }
                 oldCoords[0]+= latStep;
                 oldCoords[1]+= lonStep;
                 moveCoords.push([oldCoords[0], oldCoords[1]]);
