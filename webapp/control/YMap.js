@@ -22,8 +22,40 @@ sap.ui.define([
 
         var ymapsGeoObject = new ymaps.GeoObject(geoObjectConfig.feature, geoObjectConfig.options);
 
-        ymapsGeoObject.moveTo = function(coords){
-            ymapsGeoObject.geometry.setCoordinates(coords);
+        var moveCoords = [];
+        var timer;
+        var moveCallback = function(){
+            var coords = moveCoords.shift();
+            if (!moveCoords.length) {
+                clearInterval(timer);
+            }
+            if (coords) {
+                ymapsGeoObject.geometry.setCoordinates(coords);
+                if (coords.length > 2) {
+                    coords[2]();
+                }
+            }
+        };
+
+        ymapsGeoObject.moveTo = function(coords, completeCallback){
+            if (!moveCoords.length) {
+                timer = setInterval(moveCallback, 10);
+            }
+            var stepCount = 20; // Зависит от расстояния
+            var oldCoords = ymapsGeoObject.geometry.getCoordinates();
+            var latStep = (coords[0] - oldCoords[0]) / stepCount;
+            var lonStep = (coords[1] - oldCoords[1]) / stepCount;
+            var i;
+            for(i = 0; i < stepCount; i++) {
+                oldCoords[0]+= latStep;
+                oldCoords[1]+= lonStep;
+                moveCoords.push([oldCoords[0], oldCoords[1]]);
+            }
+            if (completeCallback) {
+                moveCoords.push([coords[0], coords[1], completeCallback]);
+            } else {
+                moveCoords.push([coords[0], coords[1]]);
+            }
         };
 
         ymapsGeoObject._getAnimationContent = function() {
