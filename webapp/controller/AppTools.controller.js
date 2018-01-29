@@ -28,7 +28,7 @@ sap.ui.define([
         onSideNavItemSelect: function(oEvent) {
             var item = oEvent.getParameter('item'); // returns tnt:NavigationListItem
             var routeName = item.data('params');
-            if (!routeName || routeName.indexOf('start') < 0 && routeName.indexOf('techState') < 0) {
+            if (!routeName || routeName.indexOf('start') < 0 && routeName.indexOf('techState') < 0 && routeName.indexOf('fuel') < 0) {
                 this.getView().byId('toolPage').setSideExpanded(false);
                 MessageToast.show('Раздел "' + item.getText() + '" временно недоступен');
                 return;

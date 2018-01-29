@@ -52,7 +52,8 @@
       "routes": [
         {"pattern": "", "name": "start", "target": "start"},
         {"pattern": "unit/:unitId:", "name": "unitState", "target": "unitState"},
-        {"pattern": "tech-state", "name": "techState", "target": "techState"}
+        {"pattern": "tech-state", "name": "techState", "target": "techState"},
+        {"pattern": "fuel", "name": "fuelCsm", "target": "fuelCsm"}
       ],
       "targets": {
         "login": {
@@ -74,7 +75,8 @@
         "home": {"viewName": "Home", "viewLevel": 1},
         "start": {"viewName": "UnitList", "parent":"home", "controlId":"autoSplit", "controlAggregation":"masterPages", "viewLevel":1},
         "unitState": {"viewName": "UnitState", "parent":"home", "controlId":"autoSplit", "controlAggregation":"masterPages", "viewLevel":2},
-        "techState": {"viewName": "TechState", "viewLevel": 2}
+        "techState": {"viewName": "TechState", "viewLevel": 2},
+        "fuelCsm": {"viewName": "FuelCsm", "viewLevel": 3}
       }
     }
   }

@@ -192,3 +192,7 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
     50% {opacity: 1.0;}
     100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
 }
+
+.unit-std-listitem .sapMSLIImgThumb {width: 2rem; height: 2rem;}
+.unit-std-listitem .sapMSLIDescription {font-size: 0.7rem; font-style: italic;}
+.unit-std-listitem .sapMSLITitle {font-size: 0.875rem; font-weight:bold;}

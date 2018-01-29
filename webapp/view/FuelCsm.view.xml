@@ -1,0 +1,64 @@
+<mvc:View controllerName="com.prysoft.autotracker.controller.FuelCsm"
+          xmlns:core="sap.ui.core"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns="sap.m">
+
+    <SplitContainer mode="StretchCompressMode">
+        <masterPages>
+            <Page title="{i18n>tAuto}" class="sapUiStdPage">
+                <content>
+                    <List items="{path: '/units', sorter: {path: 'name'}}" itemPress="selectAuto">
+                        <items>
+                            <StandardListItem type="Active"
+                                              title="{name}"
+                                              description="{address}"
+                                              icon="{icon}"
+                                              iconDensityAware="false"
+                                              iconInset="false"
+                                              class="unit-std-listitem"/>
+                        </items>
+                    </List>
+                </content>
+            </Page>
+        </masterPages>
+        <detailPages>
+            <Page id="fuelChargePage" title="Заправки" class="sapUiStdPage">
+                <subHeader>
+                    <Toolbar>
+                        <ComboBox id="cmbPeriod" items="{ path: '/periodCombo' }" selectionChange="cmbPeriodChange">
+                            <core:Item key="{key}" text="{text}" />
+                        </ComboBox>
+                    </Toolbar>
+                </subHeader>
+                <content>
+                    <Table id="id-data-table"
+                           inset="true"
+                           items="{path: '/requestedMessages', sorter:[{path:'p/refueling_card_id', group:'.getMsgGroup'},{path:'t', descending:true}], groupHeaderFactory: '.getMsgGroupHeader'}">
+                        <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
+                        <columns>
+                            <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
+                                <Text text="Дата" />
+                            </Column>
+                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                <Text text="Объем, л" />
+                            </Column>
+                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                <Text text="Без карты, л" />
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <!--<ObjectIdentifier title="{vn}.{vt}" />-->
+                                    <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'dd.MM.yy'}}" />
+                                    <Text text="{p/refueling_amount}" />
+                                    <Text text="---" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Page>
+        </detailPages>
+    </SplitContainer>
+</mvc:View>

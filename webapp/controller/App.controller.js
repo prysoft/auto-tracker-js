@@ -4,6 +4,16 @@ sap.ui.define([
 ], function (Controller, MessageToast) {
     'use strict';
 
+    var wialonTimeToDate = function(timeNumber) {
+        try {
+            var tzFormattedTime = wialon.util.DateTime.formatTime(timeNumber).replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6.000+03:00');
+            return new Date(Date.parse(tzFormattedTime));
+        } catch(e) {
+            console.warn('unable to convert wialon time to Date. Wialon value: ' + timeNumber);
+            return null;
+        }
+    };
+
     var updateUnit = function(unit, position, updateTime) {
         if (!unit) {
             return;
@@ -232,6 +242,98 @@ sap.ui.define([
                 this.getView().getModel().setProperty('/units', units);
                 this.getView().getModel().setProperty('/ymapGeoObjects', ymapGeoObjects);
             }).bind(this));
+        },
+
+        loadMessage: function(unitId, from, to) {
+            var deferred = $.Deferred();
+
+            if (!unitId) {
+                deferred.reject('unitId is not specified');
+                return deferred.promise();
+            }
+
+            var sess = wialon.core.Session.getInstance(); // get instance of current Session
+
+            if (to) {
+                to = to.getTime() / 1000; //wialon.util.DateTime.userTime|absoluteTime(to.getTime() / 1000);
+            } else {
+                to = sess.getServerTime(); // get ServerTime, it will be end time
+            }
+
+            if (from) {
+                from = from.getTime() / 1000; //wialon.util.DateTime.userTime|absoluteTime(from.getTime() / 1000);
+            } else {
+                from = to - 3600*24; // get begin time ( end time - 24 hours in seconds )
+            }
+
+            var ml = sess.getMessagesLoader(); // get messages loader object for current session
+            //ml.unload();
+            ml.loadInterval(unitId, from, to, /* wialon.item.Item.messageFlag */ 0, /* Flag Mask */ 0, 100, function(code, data){ // load messages for given time interval
+                if (code) {
+                    deferred.reject('MessagesLoader#loadInterval: ' + wialon.core.Errors.getErrorText(code));
+                    return;
+                }
+
+                // return empty array if no messages
+                if (!data.count) { // data.count - messages count
+                    deferred.resolve([]);
+                    return;
+                }
+
+                console.log(data.count + ' messages loaded for specified period');
+
+                /*ml.getMessages(0, data.count - 1, function(code, data){ // method params: first loaded msg index, last loaded msg index, callback
+                    if (code) {
+                        deferred.reject('MessagesLoader#getMessages: ' + wialon.core.Errors.getErrorText(code));
+                        return;
+                    }
+                    for(var i = 0; i < data.length; i++) {
+                        // Обработка
+                    }
+                    deferred.resolve(data);
+                });*/
+
+                /*ml.getPackedMessages(unitId, from, to, 'p.refueling*', function(code, data){ //get messages data for given indicies
+                    if (code) {
+                        deferred.reject('MessagesLoader#getPackedMessages: ' + wialon.core.Errors.getErrorText(code));
+                        return;
+                    }
+                    for(var i = 0; i < data.length; i++) {
+                        // Обработка
+                    }
+                    deferred.resolve(data);
+                });*/
+
+                var rc = wialon.core.Remote.getInstance(); // get instance of remote connection
+                rc.remoteCall('messages/get_messages', {
+                    timeFrom: from,
+                    timeTo: to,
+                    filter: 'p.refueling_*',
+                    flags: 0,
+                    flagsMask: 0
+                }, function(code, data){
+                    if (code) {
+                        deferred.reject('Remote#remoteCall("messages/get_messages"): ' + wialon.core.Errors.getErrorText(code));
+                        return;
+                    }
+
+                    var result = [];
+                    for(var i = 0; i < data.length; i++) {
+                        for (var prop in data[i].p) {
+                            if (prop.indexOf('refueling_') > -1) {
+                                data[i].t = wialonTimeToDate(data[i].t);
+                                result.push(data[i]);
+                                break;
+                            }
+                        }
+                    }
+
+                    deferred.resolve(result);
+                });
+
+            });
+
+            return deferred.promise();
         },
 
         onExitPress: function() {
