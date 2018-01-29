@@ -13,6 +13,8 @@ sap.ui.define([
                 var cmbPeriod = this.getView().byId('cmbPeriod');
                 cmbPeriod.setSelectedItem(cmbPeriod.getFirstItem());
             }).bind(this));
+
+            this.getView().setBusyIndicatorDelay(300);
         },
 
         _requestMessages: function() {
@@ -34,6 +36,7 @@ sap.ui.define([
                 }).always(function(){
                     oView.byId('fuelChargePage').setTitle('Заправки. ' + selectedUnit.getBindingContext().getProperty('name'));
                     oView.setBusy(false);
+                    oView.byId('cmbPeriod').setEnabled(true);
                 });
             }
         },

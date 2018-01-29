@@ -349,6 +349,7 @@ sap.ui.define([
                         //this.getView().byId('auth-remote').$()[0].contentWindow.history.back();
                         // Удаляем объекты с карты
                         this.getOwnerComponent().getModel().setProperty('/ymapGeoObjects', null);
+                        this.getOwnerComponent().getModel().setProperty('/requestedMessages', null);
                     }).bind(this), 700); // TODO Привязка к завершению анимации
                 }).bind(this));
             }

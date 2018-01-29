@@ -22,16 +22,16 @@
             </Page>
         </masterPages>
         <detailPages>
-            <Page id="fuelChargePage" title="Заправки" class="sapUiStdPage">
+            <Page id="fuelChargePage" title="Заправки. [Выберите объект из списка]" class="sapUiStdPage">
                 <subHeader>
                     <Toolbar>
-                        <ComboBox id="cmbPeriod" items="{ path: '/periodCombo' }" selectionChange="cmbPeriodChange">
+                        <ComboBox id="cmbPeriod" enabled="false" items="{ path: '/periodCombo' }" selectionChange="cmbPeriodChange">
                             <core:Item key="{key}" text="{text}" />
                         </ComboBox>
                     </Toolbar>
                 </subHeader>
                 <content>
-                    <Table id="id-data-table"
+                    <Table id="tblFuelMessages"
                            inset="true"
                            items="{path: '/requestedMessages', sorter:[{path:'p/refueling_card_id', group:'.getMsgGroup'},{path:'t', descending:true}], groupHeaderFactory: '.getMsgGroupHeader'}">
                         <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
