@@ -31,8 +31,7 @@ sap.ui.define([
         _getPeriodDates: function() {
             var cmbPeriod = this.getView().byId('cmbPeriod');
             var selectedItem = cmbPeriod.getSelectedItem();
-            console.log('Selected item: ' + selectedItem.getKey() + ' -> ' + selectedItem.getText());
-            var cmbPeriodKey = selectedItem.getKey();
+            var cmbPeriodKey = selectedItem.getKey(); //selectedItem.getText());
             var from = new Date();
             var to;
             switch(cmbPeriodKey) {
@@ -68,7 +67,6 @@ sap.ui.define([
                 if (!period) {
                     return;
                 }
-                console.log(period);
                 var from = period[0], to = period[1];
 
                 var selectedUnitId = selectedUnit.getBindingContext().getProperty('id');

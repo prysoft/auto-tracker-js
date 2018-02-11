@@ -1,7 +1,8 @@
 sap.ui.define([
     'com/prysoft/autotracker/controller/AbstractBaseController',
-    'sap/m/MessageToast'
-], function (Controller, MessageToast) {
+    'sap/m/MessageToast',
+    'jquery.sap.global'
+], function (Controller, MessageToast, $) {
     'use strict';
 
     var wialonTimeToDate = function(timeNumber) {
@@ -320,8 +321,24 @@ sap.ui.define([
                     var result = [];
                     for(var i = 0; i < data.length; i++) {
                         for (var prop in data[i].p) {
-                            if (prop.indexOf('refueling_') > -1) {
+                            if (prop.indexOf('refueling_amount') > -1 && data[i].p.refueling_amount) { // Отсекаем нулевые значения
+                                //if (result.length == 9){data[i].p.refueling_amount = 300.00;data[i].p.refueling_card_id = 322591;}
                                 data[i].t = wialonTimeToDate(data[i].t);
+                                // Суммирование израсходованного топлива
+                                /*var dt = new Date(data[i].t.getTime());
+                                dt.setHours(0, 0, 0, 0);
+
+                                var lastElem = result.length && result[result.length - 1];
+                                //if (result.length == 9){console.log(lastElem, data[i], dt);}
+                                if (lastElem && lastElem.p.refueling_card_id === data[i].p.refueling_card_id && lastElem.t.getTime() === dt.getTime()) {
+                                    lastElem.group.push(data[i]);
+                                    lastElem.p.refueling_amount += data[i].p.refueling_amount;
+                                } else {
+                                    var cpy = $.extend(true, {}, data[i]);
+                                    cpy.t = dt;
+                                    cpy.group = [data[i]];
+                                    result.push(cpy);
+                                }*/
                                 result.push(data[i]);
                                 break;
                             }
