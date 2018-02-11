@@ -17,13 +17,17 @@ sap.ui.define([
         onInit: function(){
             console.log('FUEL_CONSUMPTION_INIT');
 
-            setTimeout((function(){
-                var drsPeriod = this.getView().byId('drsPeriod');
-                drsPeriod.setDateValue(new Date());
-                drsPeriod.setSecondDateValue(new Date());
+            var drsPeriod = this.getView().byId('drsPeriod');
+            drsPeriod.setDateValue(new Date());
+            drsPeriod.setSecondDateValue(new Date());
+            this._getPeriodDates();
 
-                this._getPeriodDates();
-            }).bind(this));
+            drsPeriod.onAfterRendering = function() {
+                if (sap.m.DateRangeSelection.prototype.onAfterRendering) {
+                    sap.m.DateRangeSelection.prototype.onAfterRendering.apply(this);
+                }
+                document.getElementById(drsPeriod.sId + '-inner').disabled = true;
+            };
 
             this.getView().setBusyIndicatorDelay(300);
         },
