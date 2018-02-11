@@ -1,5 +1,4 @@
 <mvc:View controllerName="com.prysoft.autotracker.controller.FuelCsm"
-          xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc"
           xmlns="sap.m">
 
@@ -25,9 +24,18 @@
             <Page id="fuelChargePage" title="Заправки. [Выберите объект из списка]" class="sapUiStdPage">
                 <subHeader>
                     <Toolbar>
-                        <ComboBox id="cmbPeriod" enabled="false" items="{ path: '/periodCombo' }" selectionChange="cmbPeriodChange">
-                            <core:Item key="{key}" text="{text}" />
-                        </ComboBox>
+                        <DateRangeSelection id="drsPeriod" displayFormat="dd.MM.yyyy" enabled="false" disabled="disabled" change="drsPeriodChange" width="20rem"/>
+                        <!--<MaskInput mask = "Dd.Mm.Yyyy - Dd.Mm.Yyyy" placeholderSymbol = "_" placeholder = "Enter Date" >-->
+                            <!--<rules>-->
+                                <!--<MaskInputRule maskFormatSymbol = "D" regex = "[0-3]"/>-->
+                                <!--<MaskInputRule maskFormatSymbol = "d" regex = "[0-9]"/>-->
+                                <!--<MaskInputRule maskFormatSymbol = "M" regex = "[0-1]"/>-->
+                                <!--<MaskInputRule maskFormatSymbol = "m" regex = "[0-9]"/>-->
+                                <!--<MaskInputRule maskFormatSymbol = "Y" regex = "[1-2]"/>-->
+                                <!--<MaskInputRule maskFormatSymbol = "y" regex = "[0-9]"/>-->
+                            <!--</rules>-->
+                        <!--</MaskInput>-->
+                        <!--<MaskInput mask = "99.99.9999 - 99.99.9999" placeholderSymbol = "_" placeholder = "Enter Date" />-->
                     </Toolbar>
                 </subHeader>
                 <content>

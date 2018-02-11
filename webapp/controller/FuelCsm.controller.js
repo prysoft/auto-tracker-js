@@ -18,24 +18,18 @@ sap.ui.define([
             console.log('FUEL_CONSUMPTION_INIT');
 
             setTimeout((function(){
-                var cmbPeriod = this.getView().byId('cmbPeriod');
-                cmbPeriod.setSelectedItem(cmbPeriod.getFirstItem());
-                var period = this._getPeriodDates();
-                if (period) {
-                    this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(period[0]) + ' - ' + periodFormat.format(period[1]));
-                } else {
-                    this.getView().byId('tblFuelMessages').setHeaderText('Период не установлен');
-                }
+                var drsPeriod = this.getView().byId('drsPeriod');
+                drsPeriod.setDateValue(new Date());
+                drsPeriod.setSecondDateValue(new Date());
+
+                this._getPeriodDates();
             }).bind(this));
 
             this.getView().setBusyIndicatorDelay(300);
         },
 
         _getPeriodDates: function() {
-            var cmbPeriod = this.getView().byId('cmbPeriod');
-            var selectedItem = cmbPeriod.getSelectedItem();
-            var cmbPeriodKey = selectedItem.getKey(); //selectedItem.getText());
-            var from = new Date();
+            /*var from = new Date();
             var to;
             switch(cmbPeriodKey) {
                 case 't':
@@ -60,7 +54,27 @@ sap.ui.define([
                 default:
                     console.warn('Unknown period value: ' + cmbPeriodKey);
                     return null;
+            }*/
+
+            var drsPeriod = this.getView().byId('drsPeriod');
+            if (drsPeriod.getValueState() != sap.ui.core.ValueState.None) {
+                console.warn('Date period is invalid');
+                return null;
             }
+            var from = drsPeriod.getDateValue();
+            if (!from) {
+                console.warn('begin date is not defined');
+                return null;
+            }
+            from.setHours(0,0,0,0);
+            var to = drsPeriod.getSecondDateValue();
+            if (!to) {
+                console.warn('end date is not defined');
+                return null;
+            }
+            to.setHours(23,59,59,999);
+
+            this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(from) + ' - ' + periodFormat.format(to));
             return [from, to];
         },
 
@@ -85,7 +99,7 @@ sap.ui.define([
                 }).always(function(){
                     oView.byId('fuelChargePage').setTitle('Заправки. ' + selectedUnit.getBindingContext().getProperty('name'));
                     oView.setBusy(false);
-                    oView.byId('cmbPeriod').setEnabled(true);
+                    oView.byId('drsPeriod').setEnabled(true);
                 });
             }
         },
@@ -95,14 +109,17 @@ sap.ui.define([
             this._requestMessages();
         },
 
-        cmbPeriodChange: function(oEvt) {
-            //var selectedItem = oEvt.getParameter('selectedItem');
-            var period = this._getPeriodDates();
-            if (period) {
-                this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(period[0]) + ' - ' + periodFormat.format(period[1]));
+        drsPeriodChange: function(oEvt) {
+            var drsPeriod = oEvt.oSource;
+            var isValid = oEvt.getParameter("valid");
+            var from = oEvt.getParameter("from");
+            var to = oEvt.getParameter("to");
+            if (isValid && from && to) {
+                drsPeriod.setValueState(sap.ui.core.ValueState.None);
             } else {
-                this.getView().byId('tblFuelMessages').setHeaderText('Период не установлен');
+                drsPeriod.setValueState(sap.ui.core.ValueState.Error);
             }
+
             this._requestMessages();
         },
 
