@@ -4,8 +4,11 @@ sap.ui.define([
 ], function(Controller, DateFormat){
     'use strict';
 
-    var dateFormat = DateFormat.getInstance({
+    var periodFormat = DateFormat.getInstance({
         pattern: 'dd.MM.yy HH:mm'
+    });
+    var dateFormat = DateFormat.getInstance({
+        pattern: 'dd MMM yyyy'
     });
 
     var selectedUnit;
@@ -19,7 +22,7 @@ sap.ui.define([
                 cmbPeriod.setSelectedItem(cmbPeriod.getFirstItem());
                 var period = this._getPeriodDates();
                 if (period) {
-                    this.getView().byId('tblFuelMessages').setHeaderText(dateFormat.format(period[0]) + ' - ' + dateFormat.format(period[1]));
+                    this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(period[0]) + ' - ' + periodFormat.format(period[1]));
                 } else {
                     this.getView().byId('tblFuelMessages').setHeaderText('Период не установлен');
                 }
@@ -96,7 +99,7 @@ sap.ui.define([
             //var selectedItem = oEvt.getParameter('selectedItem');
             var period = this._getPeriodDates();
             if (period) {
-                this.getView().byId('tblFuelMessages').setHeaderText(dateFormat.format(period[0]) + ' - ' + dateFormat.format(period[1]));
+                this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(period[0]) + ' - ' + periodFormat.format(period[1]));
             } else {
                 this.getView().byId('tblFuelMessages').setHeaderText('Период не установлен');
             }
@@ -104,11 +107,10 @@ sap.ui.define([
         },
 
         getMsgGroup: function(oContext) {
-            var cardId = oContext.getProperty('p/refueling_card_id');
-            var name = this.getView().getModel().getProperty('/fuelCardsMap/' + cardId + '/name');
+            var date = oContext.getProperty('dt');
             return {
-                key: cardId,
-                title: 'Получатель: ' + (name ? name  + ' (карта: ' + cardId + ')': cardId + ' (Ф.И.О. отсутствует в справочнике)')
+                key: date.getTime(),
+                title: date && dateFormat.format(date)
             };
         },
 

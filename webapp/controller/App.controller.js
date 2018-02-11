@@ -324,11 +324,13 @@ sap.ui.define([
                             if (prop.indexOf('refueling_amount') > -1 && data[i].p.refueling_amount) { // Отсекаем нулевые значения
                                 //if (result.length == 9){data[i].p.refueling_amount = 300.00;data[i].p.refueling_card_id = 322591;}
                                 data[i].t = wialonTimeToDate(data[i].t);
-                                // Суммирование израсходованного топлива
-                                /*var dt = new Date(data[i].t.getTime());
-                                dt.setHours(0, 0, 0, 0);
 
-                                var lastElem = result.length && result[result.length - 1];
+                                var dt = new Date(data[i].t.getTime());
+                                dt.setHours(0, 0, 0, 0);
+                                data[i].dt = dt;
+
+                                 // Суммирование израсходованного топлива
+                                /*var lastElem = result.length && result[result.length - 1];
                                 //if (result.length == 9){console.log(lastElem, data[i], dt);}
                                 if (lastElem && lastElem.p.refueling_card_id === data[i].p.refueling_card_id && lastElem.t.getTime() === dt.getTime()) {
                                     lastElem.group.push(data[i]);

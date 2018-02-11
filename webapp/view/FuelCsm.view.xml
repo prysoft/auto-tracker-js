@@ -33,11 +33,14 @@
                 <content>
                     <Table id="tblFuelMessages" headerText=""
                            inset="true"
-                           items="{path: '/requestedMessages', sorter:[{path:'p/refueling_card_id', group:'.getMsgGroup'},{path:'t', descending:true}], groupHeaderFactory: '.getMsgGroupHeader'}">
+                           items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
                         <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
                         <columns>
                             <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
-                                <Text text="Дата" />
+                                <Text text="Время" />
+                            </Column>
+                            <Column>
+                                <Text text="Получатель" />
                             </Column>
                             <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                                 <Text text="Объем, л" />
@@ -50,7 +53,8 @@
                             <ColumnListItem>
                                 <cells>
                                     <!--<ObjectIdentifier title="{vn}.{vt}" />-->
-                                    <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'dd.MM.yy'}}" />
+                                    <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
+                                    <Text text="{p/refueling_card_id}" />
                                     <Text text="{p/refueling_amount}" />
                                     <Text text="---" />
                                 </cells>
