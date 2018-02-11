@@ -31,7 +31,7 @@
                     </Toolbar>
                 </subHeader>
                 <content>
-                    <Table id="tblFuelMessages"
+                    <Table id="tblFuelMessages" headerText=""
                            inset="true"
                            items="{path: '/requestedMessages', sorter:[{path:'p/refueling_card_id', group:'.getMsgGroup'},{path:'t', descending:true}], groupHeaderFactory: '.getMsgGroupHeader'}">
                         <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->

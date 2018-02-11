@@ -255,13 +255,13 @@ sap.ui.define([
             var sess = wialon.core.Session.getInstance(); // get instance of current Session
 
             if (to) {
-                to = to.getTime() / 1000; //wialon.util.DateTime.userTime|absoluteTime(to.getTime() / 1000);
+                to = Math.floor(to.getTime() / 1000); //wialon.util.DateTime.userTime|absoluteTime(to.getTime() / 1000);
             } else {
                 to = sess.getServerTime(); // get ServerTime, it will be end time
             }
 
             if (from) {
-                from = from.getTime() / 1000; //wialon.util.DateTime.userTime|absoluteTime(from.getTime() / 1000);
+                from = Math.floor(from.getTime() / 1000); //wialon.util.DateTime.userTime|absoluteTime(from.getTime() / 1000);
             } else {
                 from = to - 3600*24; // get begin time ( end time - 24 hours in seconds )
             }
@@ -274,13 +274,13 @@ sap.ui.define([
                     return;
                 }
 
+                console.log(data.count + ' messages loaded for specified period');
+
                 // return empty array if no messages
                 if (!data.count) { // data.count - messages count
                     deferred.resolve([]);
                     return;
                 }
-
-                console.log(data.count + ' messages loaded for specified period');
 
                 /*ml.getMessages(0, data.count - 1, function(code, data){ // method params: first loaded msg index, last loaded msg index, callback
                     if (code) {
