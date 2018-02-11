@@ -140,6 +140,11 @@ sap.ui.define([
                 title: oGroup.title,
                 upperCase: false
             });
+        },
+
+        formatRefuelingCardId: function(cardId, fuelCardsMap) {
+            var fuelCard = fuelCardsMap[cardId];
+            return fuelCard ? fuelCard.name + ' (id:' + cardId + ')' : 'id:' + cardId + ' (отсутствует в справочнике)';
         }
     });
 });
