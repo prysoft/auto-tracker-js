@@ -79,7 +79,7 @@ sap.ui.define([
             }
             to.setHours(23,59,59,999);
 
-            this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(from) + ' - ' + periodFormat.format(to));
+            //this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(from) + ' - ' + periodFormat.format(to));
             return [from, to];
         },
 
@@ -95,16 +95,23 @@ sap.ui.define([
 
                 var oView = this.getView();
                 oView.setBusy(true);
-                this.loadMessage(selectedUnitId, from, to).done(function(data){
-                    console.log(data);
+                var ctrl = this;
+                ctrl.loadMessage(selectedUnitId, from, to).done(function(data){
+                    console.log('messages: ', data);
                     oView.getModel().setProperty('/requestedMessages', data);
                 }).fail(function(err){
                     console.error(err);
                     oView.getModel().setProperty('/requestedMessages', []);
                 }).always(function(){
-                    oView.byId('fuelChargePage').setTitle('Заправки. ' + selectedUnit.getBindingContext().getProperty('name'));
-                    oView.setBusy(false);
-                    oView.byId('drsPeriod').setEnabled(true);
+                    ctrl.executeReport(selectedUnitId, from, to, 'Сводный').done(function(data){
+                        console.log('report: ', data);
+                    }).fail(function(err){
+                        console.error(err);
+                    }).always(function(){
+                        oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
+                        oView.setBusy(false);
+                        oView.byId('drsPeriod').setEnabled(true);
+                    });
                 });
             }
         },

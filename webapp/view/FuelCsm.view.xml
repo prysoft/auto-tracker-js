@@ -26,7 +26,7 @@
             </Page>
         </masterPages>
         <detailPages>
-            <Page id="fuelChargePage" title="Заправки. [Выберите объект из списка]" class="sapUiStdPage">
+            <Page id="fuelChargePage" title="Отчет. [Выберите объект из списка]" class="sapUiStdPage">
                 <subHeader>
                     <Toolbar>
                         <DateRangeSelection id="drsPeriod" displayFormat="dd.MM.yyyy" enabled="false" disabled="disabled" change="drsPeriodChange" width="20rem"/>
@@ -44,36 +44,51 @@
                     </Toolbar>
                 </subHeader>
                 <content>
-                    <Table id="tblFuelMessages" headerText=""
-                           inset="true"
-                           items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
-                        <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
-                        <columns>
-                            <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
-                                <Text text="Время" />
-                            </Column>
-                            <Column>
-                                <Text text="Получатель" />
-                            </Column>
-                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
-                                <Text text="Объем, л" />
-                            </Column>
-                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
-                                <Text text="Без карты, л" />
-                            </Column>
-                        </columns>
+                    <IconTabBar id="reportTabBar"
+                            stretchContentHeight="true"
+                            backgroundDesign="Transparent"
+                            applyContentPadding="false"
+                            expanded="{device>/isNoPhone}"
+                            class="sapUiResponsiveContentPadding">
                         <items>
-                            <ColumnListItem>
-                                <cells>
-                                    <!--<ObjectIdentifier title="{vn}.{vt}" />-->
-                                    <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
-                                    <Text text="{parts:['p/refueling_card_id', '/fuelCardsMap'], formatter: '.formatRefuelingCardId'}" />
-                                    <Text text="{p/refueling_amount}" />
-                                    <Text text="---" />
-                                </cells>
-                            </ColumnListItem>
+                            <IconTabFilter text="Отпуск топлива">
+                                <ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+                                    <Table id="tblFuelMessages"
+                                           items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
+                                        <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
+                                        <columns>
+                                            <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
+                                                <Text text="Время" />
+                                            </Column>
+                                            <Column>
+                                                <Text text="Получатель" />
+                                            </Column>
+                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                                <Text text="Объем, л" />
+                                            </Column>
+                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                                <Text text="Без карты, л" />
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <cells>
+                                                    <!--<ObjectIdentifier title="{vn}.{vt}" />-->
+                                                    <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
+                                                    <Text text="{parts:['p/refueling_card_id', '/fuelCardsMap'], formatter: '.formatRefuelingCardId'}" />
+                                                    <Text text="{p/refueling_amount}" />
+                                                    <Text text="---" />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </ScrollContainer>
+                            </IconTabFilter>
+                            <IconTabFilter text="Сливы">
+                                <Text text="В процессе разработки ..." />
+                            </IconTabFilter>
                         </items>
-                    </Table>
+                    </IconTabBar>
                 </content>
             </Page>
         </detailPages>
