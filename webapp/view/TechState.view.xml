@@ -15,14 +15,15 @@
                     </Toolbar>
                 </subHeader>
                 <content>
-                    <List items="{path: '/units'}" itemPress="goToTechDetails">
+                    <List items="{path: '/units', sorter: {path: 'name'}}" itemPress="goToTechDetails">
                         <items>
                             <StandardListItem type="Active" app:idx="{id}"
                                     title="{name}"
                                     description="{address}"
                                     icon="{icon}"
                                     iconDensityAware="false"
-                                    iconInset="false" />
+                                    iconInset="false"
+                                    class="unit-std-listitem" />
                         </items>
                     </List>
                 </content>
