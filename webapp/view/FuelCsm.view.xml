@@ -84,9 +84,6 @@
                                     </Table>
                                 </ScrollContainer>
                             </IconTabFilter>
-                            <IconTabFilter text="Сливы">
-                                <Text text="В процессе разработки ..." />
-                            </IconTabFilter>
                         </items>
                     </IconTabBar>
                 </content>

@@ -105,8 +105,26 @@ sap.ui.define([
                 }).always(function(){
                     ctrl.executeReport(selectedUnitId, from, to, 'Сводный').done(function(data){
                         console.log('report: ', data);
+                        var tables = data.getTables();
+                        if (tables) {
+                            var reportTabBar = oView.byId('reportTabBar');
+                            while(reportTabBar.getItems().length > 1) {
+                                reportTabBar.removeItem(reportTabBar.getItems().length - 1);
+                            }
+                            for (var i = 0; i < tables.length; i++) {
+                                reportTabBar.addItem(new sap.m.IconTabFilter({
+                                    key: 'tab' + i,
+                                    text: tables[i].label,
+                                    content: [new sap.m.Text({text: 'В процессе разработки...'})]
+                                }));
+                            }
+                        }
                     }).fail(function(err){
                         console.error(err);
+                        var reportTabBar = oView.byId('reportTabBar');
+                        while(reportTabBar.getItems().length > 1) {
+                            reportTabBar.removeItem(reportTabBar.getItems().length - 1);
+                        }
                     }).always(function(){
                         oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
                         oView.setBusy(false);
