@@ -5,8 +5,13 @@
           xmlns="sap.m">
 
     <Page id="autoSplitMasterList" title="{i18n>tAuto}" class="sapUiStdPage">
+        <subHeader>
+            <Toolbar>
+                <SearchField liveChange="onSearch" width="100%" />
+            </Toolbar>
+        </subHeader>
         <content>
-            <List items="{path: '/units', sorter: {path: 'name'}}" itemPress="goToInfo">
+            <List id="unitList" items="{path: '/units', sorter: {path: 'name'}}" itemPress="goToInfo">
                 <CustomListItem type="Active" app:idx="{id}">
                     <HBox>
                         <!--<core:Icon size="2rem" src="sap-icon://car-rental" class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom" />-->

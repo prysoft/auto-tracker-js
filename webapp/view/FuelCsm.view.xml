@@ -5,8 +5,13 @@
     <SplitContainer mode="StretchCompressMode">
         <masterPages>
             <Page title="{i18n>tAuto}" class="sapUiStdPage">
+                <subHeader>
+                    <Toolbar>
+                        <SearchField liveChange="onSearch" width="100%" />
+                    </Toolbar>
+                </subHeader>
                 <content>
-                    <List items="{path: '/units', sorter: {path: 'name'}}" itemPress="selectAuto">
+                    <List id="unitList" items="{path: '/units', sorter: {path: 'name'}}" itemPress="selectAuto">
                         <items>
                             <StandardListItem type="Active"
                                               title="{name}"

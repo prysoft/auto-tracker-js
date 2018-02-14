@@ -1,7 +1,8 @@
 sap.ui.define([
     'com/prysoft/autotracker/controller/App.controller',
-    'sap/ui/core/format/DateFormat'
-], function(Controller, DateFormat){
+    'sap/ui/core/format/DateFormat',
+    'sap/ui/model/Filter'
+], function(Controller, DateFormat, Filter){
     'use strict';
 
     var periodFormat = DateFormat.getInstance({
@@ -145,6 +146,21 @@ sap.ui.define([
         formatRefuelingCardId: function(cardId, fuelCardsMap) {
             var fuelCard = fuelCardsMap[cardId];
             return fuelCard ? fuelCard.name + ' (id:' + cardId + ')' : 'id:' + cardId + ' (отсутствует в справочнике)';
+        },
+
+        onSearch : function (oEvt) {
+            // add filter for search
+            var aFilters = [];
+            var sQuery = oEvt.getSource().getValue();
+            if (sQuery && sQuery.length > 0) {
+                var filter = new Filter('name', sap.ui.model.FilterOperator.Contains, sQuery);
+                aFilters.push(filter);
+            }
+
+            // update list binding
+            var list = this.getView().byId('unitList');
+            var binding = list.getBinding('items');
+            binding.filter(aFilters, 'Application');
         }
     });
 });
