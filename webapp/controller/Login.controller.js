@@ -22,7 +22,7 @@ sap.ui.define([
                         var user = wialon.core.Session.getInstance().getCurrUser();
                         console.log('USER LOGGED IN AS ' + user.getName());
 
-                        this.loadAvlUnits();
+                        this.loadAvlData();
                     }).bind(this));
                 }).bind(this);
 

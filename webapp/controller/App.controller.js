@@ -51,208 +51,237 @@ sap.ui.define([
             console.log('APP_INIT');
         },
 
-        loadAvlResources: function(){
-            var sess = wialon.core.Session.getInstance(); // get instance of current Session
+        _saveAvlResources: function(avlResources) {
+            if (!avlResources) {
+                console.warn('avl_resource: ', 'No resources loaded');
+                return;
+            }
 
-            // specify what kind of data should be returned
-            var flags = wialon.util.Number.or(
-                wialon.item.Item.dataFlag.base,
-                wialon.item.Resource.dataFlag.drivers,
-                wialon.item.Resource.dataFlag.driverUnits);
+            console.log('avl_resource: ', avlResources);
 
-            sess.loadLibrary("resourceDrivers");
+            var resources = [];
+            for (var i = 0; i < avlResources.length; i++) {
+                var resource = {
+                    id: avlResources[i].getId(),
+                    name: avlResources[i].getName(),
+                    execReports: !!wialon.util.Number.and(avlResources[i].getUserAccess(), wialon.item.Item.accessFlag.execReports)
+                };
 
-            // load items to current session
-            sess.updateDataFlags([{type: "type", data: "avl_resource", flags: flags, mode: 0}], (function(code){
-                if (code) { // exit if error code
-                    console.error(wialon.core.Errors.getErrorText(code));
-                    return;
+                var repTempls = [];
+                var avlTemplates = avlResources[i].getReports();
+                for(var prop in avlTemplates){
+                    var avlTemplate = avlTemplates[prop];
+                    repTempls.push({
+                        id: avlTemplate.id,
+                        name: avlTemplate.n,
+                        type: avlTemplate.ct
+                        // avlTemplate.c ?
+                    });
                 }
+                resource.repTempls = repTempls;
+                resources.push(resource);
+            }
+            console.log('resources: ', resources);
 
-                var avlResources = sess.getItems("avl_resource");
-                console.log(avlResources);
-            }).bind(this));
+            this.getView().getModel().setProperty('/resources', resources);
         },
 
-        loadAvlUnits: function(){
+        _saveAvlUnits: function(avlUnits) {
+            if (!avlUnits) {
+                console.warn('avl_unit: ', 'No units loaded');
+                return;
+            }
+
+            console.log('avl_unit: ', avlUnits);
+
+            //var timeZoneOffsetSeconds = new Date().getTimezoneOffset() * 60;
+            var units = [];
+            var ymapGeoObjects = [];
+            for (var i = 0; i < avlUnits.length; i++) {
+                //var unit = sess.getItem(units[i].getId()); // get unit by id
+                var unit = {
+                    id: avlUnits[i].getId(),
+                    name: avlUnits[i].getName(),
+                    icon: avlUnits[i].getIconUrl(32),
+                    iconS: avlUnits[i].getIconUrl(16)
+                };
+
+                var lastMsg = avlUnits[i].getLastMessage();
+                if (lastMsg) {
+                    // lastMsg.i; // входящие данные
+                    // lastMsg.p; // параметры
+                    // lastMsg.tp; // Тип сообщения
+                    var typeDesc;
+                    switch(lastMsg.tp) {
+                        case 'ud':
+                            typeDesc = 'сообщение с данными';
+                            unit.isAlarm = !!(unit.f & 16);
+                            break;
+                        case 'us': typeDesc = 'SMS сообщение'; break;
+                        case 'ucr': typeDesc = 'команда'; break;
+                        case 'evt': typeDesc = 'событие'; break;
+                    }
+                    unit.typeDesc = typeDesc;
+                }
+
+                var pos = avlUnits[i].getPosition();
+                if (pos) {
+                    // ymaps data begin ------------
+                    ymapGeoObjects.push({
+                        feature: {
+                            geometry: {
+                                type: "Point",
+                                coordinates: [pos.y, pos.x]
+                            },
+                            properties: {
+                                id: unit.id
+                            }
+                        },
+                        options: {
+                            iconLayout: 'default#image',
+                            // Своё изображение иконки метки.
+                            iconImageHref: unit.icon,
+                            // Размеры метки.
+                            iconImageSize: [32, 32],
+                            // Смещение левого верхнего угла иконки относительно
+                            // её "ножки" (точки привязки).
+                            iconImageOffset: [-16, -16]
+                        }
+                    });
+                    // ymaps data end --------------
+
+                    updateUnit(unit, pos, pos.t);
+                    unit.address = '[Определение местоположения...]';
+                    resolveAddress(unit, this.getView().getModel(), i);
+                } else {
+                    unit.address = '[Местоположение не известно]';
+                }
+
+                var sensors = [];
+                var avlSensors = avlUnits[i].getSensors();
+                for(var prop in avlSensors) {
+                    var avlSensor = avlSensors[prop];
+                    var sensViewParams = {}; // Default values
+                    try {
+                        sensViewParams = JSON.parse(avlSensor.c);
+                    } catch (e){}
+                    var val = avlUnits[i].calculateSensorValue(avlSensor, lastMsg);
+                    sensors.push({
+                        id: avlSensor.id,
+                        name: avlSensor.n,
+                        param: avlSensor.p, // Parameter name in messages
+                        type: avlSensor.t,  // Sensor type
+                        measure: avlSensor.m,
+                        visible: !!sensViewParams.appear_in_popup,
+                        order: sensViewParams.pos || null,
+                        value: val == wialon.item.MUnitSensor.invalidValue ? null : val
+                    });
+                }
+
+                var lastMsgUnitsFn = function(sensors) {
+                    return function(code, data){
+                        if (code) {
+                            console.error(wialon.core.Errors.getErrorText(code));
+                            return;
+                        }
+                        for (var i = 0; i < sensors.length; i++) {
+                            if (sensors[i].id in data) {
+                                var val = data[sensors[i].id];
+                                sensors[i].value = val == wialon.item.MUnitSensor.invalidValue ? null : val;
+                            }
+                        }
+                    }
+                };
+                var rc = wialon.core.Remote.getInstance(); // get instance of remote connection
+                rc.remoteCall('unit/calc_last_message', {
+                    unitId: unit.id,
+                    flags: 1
+                }, lastMsgUnitsFn(sensors));
+
+                unit.sensors = sensors;
+
+                units.push(unit);
+
+                var updateUnitStateOnMessage = function(msgEvt) {
+                    // Updating the application model
+                    var avlUnit = msgEvt.getTarget();
+                    var avlUnitId = avlUnit.getId();
+                    var data = msgEvt.getData();
+
+                    var updatedUnit = null;
+                    var updatedUnitIdx;
+                    for (updatedUnitIdx = 0; updatedUnitIdx < units.length; updatedUnitIdx++) {
+                        if (units[updatedUnitIdx].id == avlUnitId) {
+                            updatedUnit = units[updatedUnitIdx];
+                            break;
+                        }
+                    }
+                    if (!updatedUnit || !data.pos) {
+                        return;
+                    }
+
+                    var oModel = this.getOwnerComponent().getModel();
+                    oModel.setProperty('/units/' + updatedUnitIdx, updateUnit(updatedUnit, data.pos, data.t));
+                    resolveAddress(updatedUnit, oModel, updatedUnitIdx);
+
+                    // Notifying the map
+                    var oEventBus = sap.ui.getCore().getEventBus();
+                    oEventBus.publish('sap.global', 'wialonMessageRegistered', {
+                        unitId: avlUnitId,
+                        data: data
+                    });
+                };
+                avlUnits[i].addListener('messageRegistered', (updateUnitStateOnMessage).bind(this)); // register handler envoked on receiving a message
+            }
+            console.log('units: ', units);
+
+            this.getView().getModel().setSizeLimit(units.length > 100 ? units.length : 100);
+            this.getView().getModel().setProperty('/units', units);
+            this.getView().getModel().setProperty('/ymapGeoObjects', ymapGeoObjects);
+        },
+
+        loadAvlData: function(){
             var sess = wialon.core.Session.getInstance();
 
-            var flags = wialon.util.Number.or(
+            // specify what kind of data should be returned for avl resources
+            var resourceFlags = wialon.util.Number.or(
+                wialon.item.Item.dataFlag.base,
+                wialon.item.Resource.dataFlag.drivers,
+                wialon.item.Resource.dataFlag.driverUnits,
+                wialon.item.Resource.dataFlag.reports);
+
+            sess.loadLibrary("resourceDrivers");
+            sess.loadLibrary("resourceReports"); // load Reports Library
+            //---------------------------------------------------------------
+
+            // specify what kind of data should be returned for avl units
+            var unitFlags = wialon.util.Number.or(
                 wialon.item.Item.dataFlag.base,
                 wialon.item.Unit.dataFlag.sensors,
                 wialon.item.Unit.dataFlag.lastMessage);
 
             sess.loadLibrary("itemIcon");
             sess.loadLibrary("unitSensors"); // load Sensor Library
+            //---------------------------------------------------------------
 
-            sess.updateDataFlags([{type: "type", data: "avl_unit", flags: flags, mode: 0}], (function (code) {
+            sess.updateDataFlags([
+                {type: "type", data: "avl_resource", flags: resourceFlags , mode: 0},
+                {type: "type", data: "avl_unit", flags: unitFlags, mode: 0}
+            ], (function (code) {
                 if (code) {
                     console.error(wialon.core.Errors.getErrorText(code));
                     return;
                 }
 
-                var avlUnits = sess.getItems("avl_unit");
-                if (!avlUnits || !avlUnits.length) {
-                    console.warn("No units loaded");
-                    return;
-                }
+                // Saving resources
+                this._saveAvlResources(sess.getItems('avl_resource'));
 
-                console.log(avlUnits);
-
-                //var timeZoneOffsetSeconds = new Date().getTimezoneOffset() * 60;
-                var units = [];
-                var ymapGeoObjects = [];
-                for (var i = 0; i < avlUnits.length; i++) {
-                    //var unit = sess.getItem(units[i].getId()); // get unit by id
-                    var unit = {
-                        id: avlUnits[i].getId(),
-                        name: avlUnits[i].getName(),
-                        icon: avlUnits[i].getIconUrl(32),
-                        iconS: avlUnits[i].getIconUrl(16)
-                    };
-
-                    var lastMsg = avlUnits[i].getLastMessage();
-                    if (lastMsg) {
-                        // lastMsg.i; // входящие данные
-                        // lastMsg.p; // параметры
-                        // lastMsg.tp; // Тип сообщения
-                        var typeDesc;
-                        switch(lastMsg.tp) {
-                            case 'ud':
-                                typeDesc = 'сообщение с данными';
-                                unit.isAlarm = !!(unit.f & 16);
-                                break;
-                            case 'us': typeDesc = 'SMS сообщение'; break;
-                            case 'ucr': typeDesc = 'команда'; break;
-                            case 'evt': typeDesc = 'событие'; break;
-                        }
-                        unit.typeDesc = typeDesc;
-                    }
-
-                    var pos = avlUnits[i].getPosition();
-                    if (pos) {
-                        // ymaps data begin ------------
-                        ymapGeoObjects.push({
-                            feature: {
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [pos.y, pos.x]
-                                },
-                                properties: {
-                                    id: unit.id
-                                }
-                            },
-                            options: {
-                                iconLayout: 'default#image',
-                                // Своё изображение иконки метки.
-                                iconImageHref: unit.icon,
-                                // Размеры метки.
-                                iconImageSize: [32, 32],
-                                // Смещение левого верхнего угла иконки относительно
-                                // её "ножки" (точки привязки).
-                                iconImageOffset: [-16, -16]
-                            }
-                        });
-                        // ymaps data end --------------
-
-                        updateUnit(unit, pos, pos.t);
-                        unit.address = '[Определение местоположения...]';
-                        resolveAddress(unit, this.getView().getModel(), i);
-                    } else {
-                        unit.address = '[Местоположение не известно]';
-                    }
-
-                    var sensors = [];
-                    var avlSensors = avlUnits[i].getSensors();
-                    for(var prop in avlSensors) {
-                        var avlSensor = avlSensors[prop];
-                        var sensViewParams = {}; // Default values
-                        try {
-                            sensViewParams = JSON.parse(avlSensor.c);
-                        } catch (e){}
-                        var val = avlUnits[i].calculateSensorValue(avlSensor, lastMsg);
-                        sensors.push({
-                            id: avlSensor.id,
-                            name: avlSensor.n,
-                            param: avlSensor.p, // Parameter name in messages
-                            type: avlSensor.t,  // Sensor type
-                            measure: avlSensor.m,
-                            visible: !!sensViewParams.appear_in_popup,
-                            order: sensViewParams.pos || null,
-                            value: val == wialon.item.MUnitSensor.invalidValue ? null : val
-                        });
-                    }
-
-                    var lastMsgUnitsFn = function(sensors) {
-                        return function(code, data){
-                            if (code) {
-                                console.error(wialon.core.Errors.getErrorText(code));
-                                return;
-                            }
-                            for (var i = 0; i < sensors.length; i++) {
-                                if (sensors[i].id in data) {
-                                    var val = data[sensors[i].id];
-                                    sensors[i].value = val == wialon.item.MUnitSensor.invalidValue ? null : val;
-                                }
-                            }
-                        }
-                    };
-                    var rc = wialon.core.Remote.getInstance(); // get instance of remote connection
-                    rc.remoteCall('unit/calc_last_message', {
-                        unitId: unit.id,
-                        flags: 1
-                    }, lastMsgUnitsFn(sensors));
-
-                    unit.sensors = sensors;
-
-                    units.push(unit);
-
-                    var updateUnitStateOnMessage = function(msgEvt) {
-                        // Updating the application model
-                        var avlUnit = msgEvt.getTarget();
-                        var avlUnitId = avlUnit.getId();
-                        var data = msgEvt.getData();
-
-                        var updatedUnit = null;
-                        var updatedUnitIdx;
-                        for (updatedUnitIdx = 0; updatedUnitIdx < units.length; updatedUnitIdx++) {
-                            if (units[updatedUnitIdx].id == avlUnitId) {
-                                updatedUnit = units[updatedUnitIdx];
-                                break;
-                            }
-                        }
-                        if (!updatedUnit || !data.pos) {
-                            return;
-                        }
-
-                        var oModel = this.getOwnerComponent().getModel();
-                        oModel.setProperty('/units/' + updatedUnitIdx, updateUnit(updatedUnit, data.pos, data.t));
-                        resolveAddress(updatedUnit, oModel, updatedUnitIdx);
-
-                        // Notifying the map
-                        var oEventBus = sap.ui.getCore().getEventBus();
-                        oEventBus.publish('sap.global', 'wialonMessageRegistered', {
-                            unitId: avlUnitId,
-                            data: data
-                        });
-                    };
-                    avlUnits[i].addListener('messageRegistered', (updateUnitStateOnMessage).bind(this)); // register handler envoked on receiving a message
-                }
-                console.log(units);
-
-                this.getView().getModel().setProperty('/units', units);
-                this.getView().getModel().setProperty('/ymapGeoObjects', ymapGeoObjects);
+                // Saving units
+                this._saveAvlUnits(sess.getItems('avl_unit'));
             }).bind(this));
         },
 
-        loadMessage: function(unitId, from, to) {
-            var deferred = $.Deferred();
-
-            if (!unitId) {
-                deferred.reject('unitId is not specified');
-                return deferred.promise();
-            }
-
+        _convertPeriodDatesToTime: function(from, to) {
             var sess = wialon.core.Session.getInstance(); // get instance of current Session
 
             if (to) {
@@ -266,6 +295,23 @@ sap.ui.define([
             } else {
                 from = to - 3600*24; // get begin time ( end time - 24 hours in seconds )
             }
+
+            return {fromTime: from, toTime: to};
+        },
+
+        loadMessage: function(unitId, from, to) {
+            var deferred = $.Deferred();
+
+            if (!unitId) {
+                deferred.reject('unitId is not specified for messages');
+                return deferred.promise();
+            }
+
+            var period = this._convertPeriodDatesToTime(from, to);
+            from = period.fromTime;
+            to = period.toTime;
+
+            var sess = wialon.core.Session.getInstance(); // get instance of current Session
 
             var ml = sess.getMessagesLoader(); // get messages loader object for current session
             //ml.unload();
@@ -350,6 +396,105 @@ sap.ui.define([
                     deferred.resolve(result);
                 });
 
+            });
+
+            return deferred.promise();
+        },
+
+        executeReport: function(unitId, from, to, template, resource) {
+            var deferred = $.Deferred();
+
+            if (!unitId) {
+                deferred.reject('unitId is not specified for report');
+                return deferred.promise();
+            }
+
+            if (!template) {
+                deferred.reject('template id or name is not specified for report');
+                return deferred.promise();
+            }
+
+            var sess = wialon.core.Session.getInstance();
+
+            var avlResource = null;
+            var avlTemplateId = null;
+            if (resource === parseInt(resource, 10)) {
+                avlResource = sess.getItem(resource);
+            } else if (Object.prototype.toString.call(resource) === '[object String]') {
+                var avlResources = sess.getItems("avl_resource");
+                if (avlResources) {
+                    for (var i = 0; i < avlResources.length; i++) {
+                        if (resource == avlResources[i].getName()) {
+                            avlResource = avlResources[i];
+                            break;
+                        }
+                    }
+                }
+            } else if (Object.prototype.toString.call(resource) === '[object Undefined]') {
+                var tplId = (template === parseInt(template, 10)) ? template : null;
+                var tplName = (Object.prototype.toString.call(template) === '[object String]') ? template : null;
+                var avlResources = sess.getItems("avl_resource");
+                if (avlResources) {
+                    avlResourceLoop1:
+                    for (var i = 0; i < avlResources.length; i++) {
+                        var avlTemplates = avlResources[i].getReports() || {};
+                        if (avlTemplates[tplId]) {
+                            avlTemplateId = tplId;
+                            avlResource = avlResources[i];
+                            break;
+                        }
+                        avlResourceLoop2:
+                        for (var prop in avlTemplates) {
+                            if (avlTemplates[prop].n === tplName) {
+                                avlTemplateId = avlTemplates[prop].id;
+                                avlResource = avlResources[i];
+                                break avlResourceLoop1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!avlResource) {
+                deferred.reject('no resource containing report template "' + template + '"');
+                return deferred.promise();
+            }
+            console.log('avlResource for report: ', avlResource);
+
+            var avlTemplate = null;
+            if (avlTemplateId) {
+                avlTemplate = avlResource.getReport(avlTemplateId);
+            } else if (template === parseInt(template, 10)) {
+                avlTemplate = avlResource.getReport(template);
+            } else if (Object.prototype.toString.call(template) === '[object String]') {
+                var avlTemplates = avlResource.getReports() || {};
+                for (var prop in avlTemplates) {
+                    if (avlTemplates[prop].n === template) {
+                        avlTemplate = avlResource.getReport(avlTemplates[prop].id);
+                        break;
+                    }
+                }
+            }
+            if (!avlTemplate) {
+                deferred.reject('unable to find template: ' + template);
+                return deferred.promise();
+            }
+            console.log('avlTemplate for report: ', avlTemplate);
+
+            var period = this._convertPeriodDatesToTime(from, to);
+            from = period.fromTime;
+            to = period.toTime;
+            var reportInterval = {from: from, to: to, flags: wialon.item.MReport.intervalFlag.absolute };
+
+            avlResource.execReport(avlTemplate, unitId, 0, reportInterval, function(code, data) { // execReport template
+                if (code) {
+                    deferred.reject('avlResource#execReport: ' + wialon.core.Errors.getErrorText(code));
+                    return;
+                }
+                //if(!data.getTables().length){ // exit if no tables obtained
+                //    msg("<b>There is no data generated</b>"); return;
+                //}
+                deferred.resolve(data);
             });
 
             return deferred.promise();
