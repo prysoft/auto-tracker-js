@@ -459,7 +459,7 @@ sap.ui.define([
                 deferred.reject('no resource containing report template "' + template + '"');
                 return deferred.promise();
             }
-            console.log('avlResource for report: ', avlResource);
+            console.log('avlResource for report: ', avlResource.getName());
 
             var avlTemplate = null;
             if (avlTemplateId) {
@@ -479,7 +479,7 @@ sap.ui.define([
                 deferred.reject('unable to find template: ' + template);
                 return deferred.promise();
             }
-            console.log('avlTemplate for report: ', avlTemplate);
+            console.log('avlTemplate for report: ', avlTemplate.n);
 
             var period = this._convertPeriodDatesToTime(from, to);
             from = period.fromTime;
@@ -491,10 +491,43 @@ sap.ui.define([
                     deferred.reject('avlResource#execReport: ' + wialon.core.Errors.getErrorText(code));
                     return;
                 }
-                //if(!data.getTables().length){ // exit if no tables obtained
-                //    msg("<b>There is no data generated</b>"); return;
-                //}
-                deferred.resolve(data);
+                var tables = data.getTables() || [];
+                if (!tables.length) {
+                    deferred.resolve(tables);
+                    return;
+                }
+                var tblsWithDataCnt = 0;
+                for(var i = 0; i < tables.length; i++) {
+                    data.getTableRows(i, 0, tables[i].rows, (function(i, code, rows){
+                        var rowValues = [];
+                        if (code) {
+                            console.warn('data#getTableRows: ', wialon.core.Errors.getErrorText(code));
+                        } else {
+                            if (rows) {
+                                for (var j = 0; j < rows.length; j++) {
+                                    if (!rows[j].c) {
+                                        continue;
+                                    }
+                                    var cellValues = [];
+                                    for (var k = 0; k < rows[j].c.length; k++) {
+                                        var cellValue = rows[j].c[k];
+                                        if (typeof cellValue == 'object') {
+                                            cellValue = (typeof cellValue.t == 'string') ? cellValue.t : undefined;
+                                        }
+                                        cellValues.push(cellValue);
+                                    }
+                                    if (cellValues.length) {
+                                        rowValues.push(cellValues);
+                                    }
+                                }
+                            }
+                        }
+                        tables[i].values = rowValues;
+                        if (++tblsWithDataCnt >= tables.length) {
+                            deferred.resolve(tables);
+                        }
+                    }).bind(null, i));
+                }
             });
 
             return deferred.promise();
