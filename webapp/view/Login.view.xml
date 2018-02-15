@@ -10,7 +10,7 @@
                 <html:iframe id="auth-remote"
                              src="https://hosting.wialon.com/login.html?lang=ru&amp;client_id=AuTr&amp;access_type=256&amp;activation_time=0&amp;duration=604800&amp;flags=1&amp;redirect_uri=https://hosting.wialon.com/post_token.html"
                              scrolling="no"
-                             style="position:absolute; overflow:hidden; top:-110px; width:100vw; height:100vh; border:none; min-width:15rem; max-width:620px; max-height:430px;"></html:iframe>
+                             style="position:absolute; overflow:hidden; top:-110px; width:100vw; height:430px; border:none; min-width:15rem; max-width:620px; max-height:430px;"></html:iframe>
             </html:div>
 
         </items>
