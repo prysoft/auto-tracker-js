@@ -5,7 +5,7 @@
 
     <FlexBox class="login-view-page" fitContainer="true" alignItems="Center" justifyContent="Center" direction="Column">
         <items>
-            <Label text="Системы безопасности" class="text-small-italic" />
+            <Label text="Системы Безопасности" class="text-small-italic" />
             <html:div style="position:relative; overflow:hidden; width:100vw; height:100vh; min-width:15rem; max-width:620px; max-height:218px; border-radius:3px 3px 0 0;">
                 <html:iframe id="auth-remote"
                              src="https://hosting.wialon.com/login.html?lang=ru&amp;client_id=AuTr&amp;access_type=256&amp;activation_time=0&amp;duration=604800&amp;flags=1&amp;redirect_uri=https://hosting.wialon.com/post_token.html"
