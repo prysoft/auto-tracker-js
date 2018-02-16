@@ -107,20 +107,33 @@ sap.ui.define([
                         console.log('report: ', tables);
                         var reportTabBar = oView.byId('reportTabBar');
                         while(reportTabBar.getItems().length > 1) {
-                            reportTabBar.removeItem(reportTabBar.getItems().length - 1);
+                            reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
                         }
                         for (var i = 0; i < tables.length; i++) {
+                            var tbl = tables[i];
+                            var columns = [];
+                            var rows = [];
+                            for (var j = 0; j < tbl.header.length; j++) {
+                                columns.push(new sap.m.Column({
+                                    width : tbl.header_type[j] ? undefined : '1.5em',
+                                    header: new sap.m.Label({text: tbl.header[j]})
+                                }));
+                                rows.push(new sap.m.Text({text:'{' + j + '}'}));
+                            }
+                            var oTable = new sap.m.Table(tables[i].name + '_tbl', {columns: columns});
+                            oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
+                            oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
                             reportTabBar.addItem(new sap.m.IconTabFilter({
                                 key: 'tab' + i,
                                 text: tables[i].label,
-                                content: [new sap.m.Text({text: 'В процессе разработки...'})]
+                                content: [oTable]
                             }));
                         }
                     }).fail(function(err){
                         console.error(err);
                         var reportTabBar = oView.byId('reportTabBar');
                         while(reportTabBar.getItems().length > 1) {
-                            reportTabBar.removeItem(reportTabBar.getItems().length - 1);
+                            reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
                         }
                     }).always(function(){
                         oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
