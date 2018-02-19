@@ -44,6 +44,7 @@ sap.ui.define([
                     }).bind(this));
                 }
 
+                this.getView().rerender();
             }, this);
         }
 
