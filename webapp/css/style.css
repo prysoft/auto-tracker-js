@@ -17,6 +17,7 @@
 }
 
 .sap-ui-custom-extra .sapMListTbl .sapMLIB.sapMListTblRow[data-err="true"] { background-color: #fff0f0; }
+.sap-ui-custom-extra .sapMListTbl .sapMLIB.sapMListTblRow[data-err="true"] .sapMText { color: #800000; }
 
 /* Sensor List */
 .sap-ui-custom-extra .sapMList.sensor-list .sapMLIB {
