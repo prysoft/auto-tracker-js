@@ -53,23 +53,32 @@
                             class="sapUiResponsiveContentPadding">
                         <items>
                             <IconTabFilter text="Отпуск топлива">
-                                <ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+                                <!-- Two tables is a workaround for fixed sap.m.Table header -->
+                                <Table showNoData="false" >
+                                    <columns>
+                                        <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
+                                            <Text text="Время" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="Получатель" />
+                                        </Column>
+                                        <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                            <Text text="По карте, л" />
+                                        </Column>
+                                        <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                                            <Text text="Без карты, л" />
+                                        </Column>
+                                    </columns>
+                                </Table>
+                                <ScrollContainer height="calc(100% - 3rem)" width="100%" horizontal="false" vertical="true">
                                     <Table id="tblFuelMessages"
                                            items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
                                         <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
                                         <columns>
-                                            <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
-                                                <Text text="Время" />
-                                            </Column>
-                                            <Column>
-                                                <Text text="Получатель" />
-                                            </Column>
-                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
-                                                <Text text="По карте, л" />
-                                            </Column>
-                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
-                                                <Text text="Без карты, л" />
-                                            </Column>
+                                            <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true" />
+                                            <Column />
+                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
+                                            <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
                                         </columns>
                                         <items>
                                             <ColumnListItem>
