@@ -16,6 +16,8 @@
     line-height: 1.2rem;
 }
 
+.sap-ui-custom-extra .sapMListTbl .sapMLIB.sapMListTblRow[data-err="true"] { background-color: #fff0f0; }
+
 /* Sensor List */
 .sap-ui-custom-extra .sapMList.sensor-list .sapMLIB {
     height: 2rem;

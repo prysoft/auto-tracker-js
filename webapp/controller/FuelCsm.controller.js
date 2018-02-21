@@ -1,8 +1,9 @@
 sap.ui.define([
     'com/prysoft/autotracker/controller/App.controller',
     'sap/ui/core/format/DateFormat',
-    'sap/ui/model/Filter'
-], function(Controller, DateFormat, Filter){
+    'sap/ui/model/Filter',
+    'jquery.sap.global'
+], function(Controller, DateFormat, Filter, $){
     'use strict';
 
     var periodFormat = DateFormat.getInstance({
@@ -95,52 +96,69 @@ sap.ui.define([
 
                 var oView = this.getView();
                 oView.setBusy(true);
-                var ctrl = this;
-                ctrl.loadMessage(selectedUnitId, from, to).done(function(data){
-                    console.log('messages: ', data);
-                    oView.getModel().setProperty('/requestedMessages', data);
+
+                var dLoadMsg = $.Deferred();
+                this.loadMessage(selectedUnitId, from, to).done(function(messages){
+                    console.log('messages: ', messages);
+                    dLoadMsg.resolve(messages);
                 }).fail(function(err){
                     console.error(err);
-                    oView.getModel().setProperty('/requestedMessages', []);
-                }).always(function(){
-                    ctrl.executeReport(selectedUnitId, from, to, 'Сводный').done(function(tables){
-                        console.log('report: ', tables);
-                        var reportTabBar = oView.byId('reportTabBar');
-                        while(reportTabBar.getItems().length > 1) {
-                            reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
-                        }
-                        for (var i = 0; i < tables.length; i++) {
-                            var tbl = tables[i];
-                            var columns = [];
-                            var rows = [];
-                            for (var j = 0; j < tbl.header.length; j++) {
-                                columns.push(new sap.m.Column({
-                                    width : tbl.header_type[j] ? undefined : '1.5em',
-                                    header: new sap.m.Label({text: tbl.header[j]})
-                                }));
-                                rows.push(new sap.m.Text({text:'{' + j + '}'}));
-                            }
-                            var oTable = new sap.m.Table(tables[i].name + '_tbl', {columns: columns});
-                            oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
-                            oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
-                            reportTabBar.addItem(new sap.m.IconTabFilter({
-                                key: 'tab' + i,
-                                text: tables[i].label,
-                                content: [oTable]
-                            }));
-                        }
-                    }).fail(function(err){
-                        console.error(err);
-                        var reportTabBar = oView.byId('reportTabBar');
-                        while(reportTabBar.getItems().length > 1) {
-                            reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
-                        }
-                    }).always(function(){
-                        oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
-                        oView.setBusy(false);
-                        oView.byId('drsPeriod').setEnabled(true);
-                    });
+                    dLoadMsg.resolve([]);
                 });
+
+                var dExecRep = $.Deferred();
+                this.executeReport(selectedUnitId, from, to, 'Сводный').done(function(tables){
+                    console.log('report: ', tables);
+                    dExecRep.resolve(tables);
+                }).fail(function(err){
+                    console.error(err);
+                    dExecRep.resolve([]);
+                });
+
+                $.when(dLoadMsg, dExecRep).done(function(messages, tables){
+
+                    var reportTabBar = oView.byId('reportTabBar');
+                    while(reportTabBar.getItems().length > 1) {
+                        reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
+                    }
+                    for (var i = 0; i < tables.length; i++) {
+                        var tbl = tables[i];
+                        var columns = [];
+                        var rows = [];
+                        for (var j = 0; j < tbl.header.length; j++) {
+                            columns.push(new sap.m.Column({
+                                width : tbl.header_type[j] ? undefined : '1.5em',
+                                header: new sap.m.Label({text: tbl.header[j]})
+                            }));
+                            rows.push(new sap.m.Text({text:'{' + j + '}'}));
+                        }
+                        var oTable = new sap.m.Table(tables[i].name + '_tbl', {columns: columns});
+                        oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
+                        // Merge data with fuel charge report
+                        if (tables[i].name === 'unit_thefts') {
+                            for (var k = 0; k < tbl.values.length; k++) {
+                                var time = Date.parse(tbl.values[k][1]);
+                                var t = new Date(time);
+                                var dt = new Date(time);
+                                dt.setHours(0, 0, 0, 0);
+                                messages.push({ t: t, dt: dt, theft_amount: (tbl.values[k][3]).replace(/([^\d^.]+)/g, ''), theft_place: tbl.values[k][2] });
+                            }
+                        }
+                        oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
+                        reportTabBar.addItem(new sap.m.IconTabFilter({
+                            key: 'tab' + i,
+                            text: tables[i].label,
+                            content: [oTable]
+                        }));
+                    }
+
+                    oView.getModel().setProperty('/requestedMessages', messages);
+                }).always(function(){
+                    oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
+                    oView.setBusy(false);
+                    oView.byId('drsPeriod').setEnabled(true);
+                });
+
             }
         },
 
@@ -166,7 +184,7 @@ sap.ui.define([
         getMsgGroup: function(oContext) {
             var date = oContext.getProperty('dt');
             return {
-                key: date.getTime(),
+                key: date && date.getTime(),
                 title: date && dateFormat.format(date)
             };
         },
@@ -178,7 +196,13 @@ sap.ui.define([
             });
         },
 
-        formatRefuelingCardId: function(cardId, fuelCardsMap) {
+        formatRefuelingCardId: function(theftPlace, cardId, fuelCardsMap) {
+            if (theftPlace !== undefined) {
+                return 'Слив: ' + theftPlace;
+            }
+            if (cardId === undefined) {
+                return '---';
+            }
             var fuelCard = fuelCardsMap[cardId];
             return fuelCard ? fuelCard.name + ' (id:' + cardId + ')' : 'id:' + cardId + ' (отсутствует в справочнике)';
         },
