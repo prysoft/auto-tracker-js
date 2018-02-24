@@ -123,15 +123,16 @@ sap.ui.define([
                     }
                     for (var i = 0; i < tables.length; i++) {
                         var tbl = tables[i];
+                        var hdrColumns = [];
                         var columns = [];
                         var rows = [];
                         for (var j = 0; j < tbl.header.length; j++) {
-                            columns.push(new sap.m.Column({
-                                width : tbl.header_type[j] ? undefined : '1.5em',
-                                header: new sap.m.Label({text: tbl.header[j]})
-                            }));
+                            var colConfig = { width : tbl.header_type[j] ? undefined : '1.5em' };
+                            columns.push(new sap.m.Column(colConfig));
+                            hdrColumns.push(new sap.m.Column($.extend({header: new sap.m.Label({text: tbl.header[j]})}, colConfig)));
                             rows.push(new sap.m.Text({text:'{' + j + '}'}));
                         }
+                        var oTableHeader = new sap.m.Table(tables[i].name + '_tbl_hdr', {columns: hdrColumns, showNoData: false});
                         var oTable = new sap.m.Table(tables[i].name + '_tbl', {columns: columns});
                         oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
                         // Merge data with fuel charge report
@@ -148,7 +149,16 @@ sap.ui.define([
                         reportTabBar.addItem(new sap.m.IconTabFilter({
                             key: 'tab' + i,
                             text: tables[i].label,
-                            content: [oTable]
+                            content: [
+                                oTableHeader,
+                                new sap.m.ScrollContainer({
+                                    height: 'calc(100% - 3rem)',
+                                    width: '100%',
+                                    horizontal: false,
+                                    vertical: true,
+                                    content: [oTable]
+                                })
+                            ]
                         }));
                     }
 
