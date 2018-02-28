@@ -115,12 +115,19 @@ sap.ui.define([
                     dExecRep.resolve([]);
                 });
 
+                var oCtrl = this;
                 $.when(dLoadMsg, dExecRep).done(function(messages, tables){
 
                     var reportTabBar = oView.byId('reportTabBar');
-                    while(reportTabBar.getItems().length > 1) {
+                    while(reportTabBar.getItems().length > 0) {
                         reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
                     }
+
+                    if (messages.length) {
+                        var fuelChargesTab = sap.ui.xmlfragment("com.prysoft.autotracker.view.FuelCharges", oCtrl);
+                        reportTabBar.addItem(fuelChargesTab);
+                    }
+
                     for (var i = 0; i < tables.length; i++) {
                         var tbl = tables[i];
                         var hdrColumns = [];

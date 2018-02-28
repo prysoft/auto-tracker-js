@@ -1,0 +1,47 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" >
+    <IconTabFilter text="Отпуск топлива">
+        <!-- Two tables is a workaround for fixed sap.m.Table header -->
+        <Table showNoData="false" >
+            <columns>
+                <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
+                    <Text text="Время" />
+                </Column>
+                <Column>
+                    <Text text="Получатель" />
+                </Column>
+                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                    <Text text="По карте, л" />
+                </Column>
+                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                    <Text text="Без карты, л" />
+                </Column>
+            </columns>
+        </Table>
+        <ScrollContainer height="calc(100% - 3rem)" width="100%" horizontal="false" vertical="true">
+            <Table id="tblFuelMessages"
+                   items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
+                <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
+                <columns>
+                    <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true" />
+                    <Column />
+                    <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
+                    <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <!--<ObjectIdentifier title="{vn}.{vt}" />-->
+                            <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
+                            <Text text="{parts:['theft_place', 'p/refueling_card_id', '/fuelCardsMap'], formatter: '.formatRefuelingCardId'}" />
+                            <Text text="{= ${p/refueling_amount} === undefined ? '---' : ${p/refueling_amount}}" />
+                            <Text text="{theft_amount}" />
+                        </cells>
+                        <customData>
+                            <core:CustomData key="err" value="true" writeToDom="{= !!${theft_amount} }" />
+                        </customData>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </ScrollContainer>
+    </IconTabFilter>
+</core:FragmentDefinition>
