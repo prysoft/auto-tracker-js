@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" >
-    <IconTabFilter text="Отпуск топлива">
+    <IconTabFilter text="Отпуск топлива" key="tab_fuelCharges">
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
         <Table showNoData="false" >
             <columns>

@@ -154,7 +154,7 @@ sap.ui.define([
                         }
                         oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
                         reportTabBar.addItem(new sap.m.IconTabFilter({
-                            key: 'tab' + i,
+                            key: 'tab_' + tables[i].name,
                             text: tables[i].label,
                             content: [
                                 oTableHeader,
@@ -167,6 +167,12 @@ sap.ui.define([
                                 })
                             ]
                         }));
+                    }
+                    // reportTabBar.setSelectedKey(); // will select the first tab if no arguments are passed. If tab was folded by user, it will NOT be unfolded.
+                    // Another way to select tab by its index. If tab was folded by user, it WILL be unfolded.
+                    var tbItems = reportTabBar.getItems();
+                    if (tbItems.length) {
+                       reportTabBar.setSelectedItem(tbItems[0]);
                     }
 
                     oView.getModel().setProperty('/requestedMessages', messages);
