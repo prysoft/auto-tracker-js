@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" >
     <IconTabFilter text="Отпуск топлива" key="tab_fuelCharges">
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
-        <Table showNoData="false" >
+        <Table showNoData="false">
             <columns>
                 <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
                     <Text text="Время" />
@@ -17,7 +17,7 @@
                 </Column>
             </columns>
         </Table>
-        <ScrollContainer height="calc(100% - 3rem)" width="100%" horizontal="false" vertical="true">
+        <ScrollContainer height="auto" width="100%" horizontal="false" vertical="true" class="tblBodyWithHeaderAndFooter">
             <Table id="tblFuelMessages"
                    items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
                 <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
@@ -43,5 +43,29 @@
                 </items>
             </Table>
         </ScrollContainer>
+        <Table showNoData="false">
+            <columns>
+                <Column width="5em" styleClass="no-horizontal-padding">
+                    <footer>
+                        <Button icon="sap-icon://save" type="Transparent" press="saveChargeReport" />
+                    </footer>
+                </Column>
+                <Column>
+                    <footer>
+                        <Text text="ИТОГО" />
+                    </footer>
+                </Column>
+                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                    <footer>
+                        <Text text="-----" />
+                    </footer>
+                </Column>
+                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                    <footer>
+                        <Text text="-----" />
+                    </footer>
+                </Column>
+            </columns>
+        </Table>
     </IconTabFilter>
 </core:FragmentDefinition>

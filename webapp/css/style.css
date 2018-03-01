@@ -199,3 +199,13 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
 .unit-std-listitem .sapMSLIImgThumb {width: 2rem; height: 2rem;}
 .unit-std-listitem .sapMSLIDescription {font-size: 0.7rem; font-style: italic;}
 .unit-std-listitem .sapMSLITitle {font-size: 0.875rem; font-weight:bold;}
+
+.sap-ui-custom-extra .tblBodyWithHeaderAndFooter {
+    max-height: calc(100% - 6rem);
+    min-height: 6rem;
+}
+
+.no-horizontal-padding {
+    padding-top:0;
+    padding-bottom:0;
+}
