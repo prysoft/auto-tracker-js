@@ -130,6 +130,21 @@ sap.ui.define([
 
                     for (var i = 0; i < tables.length; i++) {
                         var tbl = tables[i];
+                        // Временно скрываем сводку
+                        if (tbl.name === 'unit_generic') {
+                            continue;
+                        }
+                        // Merge data with fuel charge report
+                        if (tbl.name === 'unit_thefts' && messages.length) {
+                            for (var k = 0; k < tbl.values.length; k++) {
+                                var time = Date.parse(tbl.values[k][1]);
+                                var t = new Date(time);
+                                var dt = new Date(time);
+                                dt.setHours(0, 0, 0, 0);
+                                messages.push({ t: t, dt: dt, theft_amount: (tbl.values[k][3]).replace(/([^\d^.]+)/g, ''), theft_place: tbl.values[k][2] });
+                            }
+                            continue;
+                        }
                         var hdrColumns = [];
                         var columns = [];
                         var rows = [];
@@ -139,23 +154,13 @@ sap.ui.define([
                             hdrColumns.push(new sap.m.Column($.extend({header: new sap.m.Label({text: tbl.header[j]})}, colConfig)));
                             rows.push(new sap.m.Text({text:'{' + j + '}'}));
                         }
-                        var oTableHeader = new sap.m.Table(tables[i].name + '_tbl_hdr', {columns: hdrColumns, showNoData: false});
-                        var oTable = new sap.m.Table(tables[i].name + '_tbl', {columns: columns});
+                        var oTableHeader = new sap.m.Table(tbl.name + '_tbl_hdr', {columns: hdrColumns, showNoData: false});
+                        var oTable = new sap.m.Table(tbl.name + '_tbl', {columns: columns});
                         oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
-                        // Merge data with fuel charge report
-                        if (tables[i].name === 'unit_thefts') {
-                            for (var k = 0; k < tbl.values.length; k++) {
-                                var time = Date.parse(tbl.values[k][1]);
-                                var t = new Date(time);
-                                var dt = new Date(time);
-                                dt.setHours(0, 0, 0, 0);
-                                messages.push({ t: t, dt: dt, theft_amount: (tbl.values[k][3]).replace(/([^\d^.]+)/g, ''), theft_place: tbl.values[k][2] });
-                            }
-                        }
                         oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
                         reportTabBar.addItem(new sap.m.IconTabFilter({
-                            key: 'tab_' + tables[i].name,
-                            text: tables[i].label,
+                            key: 'tab_' + tbl.name,
+                            text: tbl.label,
                             content: [
                                 oTableHeader,
                                 new sap.m.ScrollContainer({
