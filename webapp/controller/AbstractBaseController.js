@@ -165,6 +165,35 @@ sap.ui.define([
         },
         setCaretToPos: function (inputDomElement, pos) {
             this.setSelectionRange(inputDomElement, pos, pos);
+        },
+
+        saveToTextFile: function(filename, data) {
+            //var blobData = new Blob([data], {type:'text/plain'});
+            //var href = window.URL.createObjectURL(blobData);
+            var url = 'data:application/octet-stream,' + encodeURIComponent(data);
+            this._saveToFileFromUrl(filename, url);
+        },
+
+        saveToBinaryFile: function(filename, data) {
+            // At the beginning '\ufeff' (þÿ) the Byte Order Mark for UTF-16BE, '\ufffe' (ÿþ) - UTF-16(LE), \xEF \xBB \xBF - UTF-8
+            // 'data:application/octet-stream;charset=utf-16le;base64,' + btoa(encodeURIComponent('ЕQ%').replace(/%/g, '\\x'))
+            var url = 'data:application/octet-stream;charset=utf-16le;base64,//5mAG8AbwAgAGIAYQByAAoA';
+            this._saveToFileFromUrl(filename, url);
+        },
+
+        _saveToFileFromUrl: function(filename, url) {
+            var downloadLink = document.createElement('a');
+            downloadLink.setAttribute('href', url);
+            downloadLink.setAttribute('download', filename);
+            downloadLink.innerHTML = filename;
+            downloadLink.style.display = 'none';
+            downloadLink.onclick = function(evt){
+                //document.body.removeChild(downloadLink);
+                document.body.removeChild(evt.target);
+            };
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            //document.body.removeChild(downloadLink);
         }
     });
 });

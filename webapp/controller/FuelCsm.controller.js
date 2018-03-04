@@ -261,6 +261,10 @@ sap.ui.define([
             var list = this.getView().byId('unitList');
             var binding = list.getBinding('items');
             binding.filter(aFilters, 'Application');
+        },
+
+        saveChargeReport: function() {
+            this.saveToTextFile('FuelChargeReport.txt', 'Время;Получатель;По карте;Без карты');
         }
     });
 });
