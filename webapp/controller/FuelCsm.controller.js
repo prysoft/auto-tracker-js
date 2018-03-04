@@ -123,11 +123,18 @@ sap.ui.define([
                         reportTabBar.removeItem(reportTabBar.getItems().length - 1).destroyContent();
                     }
 
+                    var refueling_total = 0;
                     if (messages.length) {
                         var fuelChargesTab = sap.ui.xmlfragment("com.prysoft.autotracker.view.FuelCharges", oCtrl);
                         reportTabBar.addItem(fuelChargesTab);
+                        for (var i = 0; i < messages.length; i++) {
+                            if (messages[i].p && !isNaN(messages[i].p.refueling_amount)) {
+                                refueling_total += messages[i].p.refueling_amount;
+                            }
+                        }
                     }
 
+                    var theft_total = 0;
                     for (var i = 0; i < tables.length; i++) {
                         var tbl = tables[i];
                         // Временно скрываем сводку
@@ -141,7 +148,12 @@ sap.ui.define([
                                 var t = new Date(time);
                                 var dt = new Date(time);
                                 dt.setHours(0, 0, 0, 0);
-                                messages.push({ t: t, dt: dt, theft_amount: (tbl.values[k][3]).replace(/([^\d^.]+)/g, ''), theft_place: tbl.values[k][2] });
+                                var theft_amount = (tbl.values[k][3]).replace(/([^\d^.]+)/g, '');
+                                if (!isNaN(theft_amount)) {
+                                    theft_amount = parseFloat(theft_amount);
+                                    theft_total += theft_amount;
+                                }
+                                messages.push({ t: t, dt: dt, theft_amount: theft_amount, theft_place: tbl.values[k][2] });
                             }
                             continue;
                         }
@@ -181,6 +193,7 @@ sap.ui.define([
                     }
 
                     oView.getModel().setProperty('/requestedMessages', messages);
+                    oView.getModel().setProperty('/fuelChargesReport', {refueling_total: refueling_total, theft_total: theft_total});
                 }).always(function(){
                     oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
                     oView.setBusy(false);

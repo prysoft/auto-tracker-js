@@ -57,12 +57,12 @@
                 </Column>
                 <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
-                        <Text text="-----" />
+                        <Text text="{/fuelChargesReport/refueling_total}" />
                     </footer>
                 </Column>
                 <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
-                        <Text text="-----" />
+                        <Text text="{/fuelChargesReport/theft_total}" />
                     </footer>
                 </Column>
             </columns>
