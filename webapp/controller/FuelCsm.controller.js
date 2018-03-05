@@ -161,7 +161,8 @@ sap.ui.define([
                         var columns = [];
                         var rows = [];
                         for (var j = 0; j < tbl.header.length; j++) {
-                            var colConfig = { width : tbl.header_type[j] ? undefined : '1.5em' };
+                            var colSize = tbl.columnSizes[j];
+                            var colConfig = { width : colSize > 0 && colSize < 4 ? (colSize * 1.5) + 'em' : undefined };
                             columns.push(new sap.m.Column(colConfig));
                             hdrColumns.push(new sap.m.Column($.extend({header: new sap.m.Label({text: tbl.header[j]})}, colConfig)));
                             rows.push(new sap.m.Text({text:'{' + j + '}'}));

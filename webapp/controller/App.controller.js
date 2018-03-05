@@ -500,6 +500,7 @@ sap.ui.define([
                 for(var i = 0; i < tables.length; i++) {
                     data.getTableRows(i, 0, tables[i].rows, (function(i, code, rows){
                         var rowValues = [];
+                        var columnSizes = new Array(tables[i].columns);
                         if (code) {
                             console.warn('data#getTableRows: ', wialon.core.Errors.getErrorText(code));
                         } else {
@@ -514,6 +515,9 @@ sap.ui.define([
                                         if (typeof cellValue == 'object') {
                                             cellValue = (typeof cellValue.t == 'string') ? cellValue.t : undefined;
                                         }
+                                        if (k < columnSizes.length && typeof cellValue == 'string') {
+                                            columnSizes[k] = Math.max(columnSizes[k] || 0, cellValue.length);
+                                        }
                                         cellValues.push(cellValue);
                                     }
                                     if (cellValues.length) {
@@ -523,6 +527,7 @@ sap.ui.define([
                             }
                         }
                         tables[i].values = rowValues;
+                        tables[i].columnSizes = columnSizes;
                         if (++tblsWithDataCnt >= tables.length) {
                             deferred.resolve(tables);
                         }
