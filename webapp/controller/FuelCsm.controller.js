@@ -168,8 +168,8 @@ sap.ui.define([
                         }
                         var oTableHeader = new sap.m.Table(tbl.name + '_tbl_hdr', {columns: hdrColumns, showNoData: false});
                         var oTable = new sap.m.Table(tbl.name + '_tbl', {columns: columns});
-                        oTable.bindItems('/', new sap.m.ColumnListItem({cells: rows}));
-                        oTable.setModel(new sap.ui.model.json.JSONModel(tbl.values));
+                        oTable.bindItems('/values', new sap.m.ColumnListItem({cells: rows}));
+                        oTable.setModel(new sap.ui.model.json.JSONModel(tbl));
                         reportTabBar.addItem(new sap.m.IconTabFilter({
                             key: 'tab_' + tbl.name,
                             text: tbl.label,
@@ -301,8 +301,15 @@ sap.ui.define([
             }
             var tableName = selectedKey.replace(/^tab_/, '');
             var oModel = sap.ui.getCore().byId(tableName + '_tbl').getModel();
-            var tableRows = oModel.getProperty('/');
 
+            var tableHeader = oModel.getProperty('/header');
+            var header = '';
+            for (var i = 0; i < tableHeader.length; i++) {
+                header += (i == 0 ? '' : ';') + tableHeader[i];
+            }
+            header += '\n';
+
+            var tableRows = oModel.getProperty('/values');
             var body = '';
             for (var i = 0; i < tableRows.length; i++) {
                 var row = tableRows[i];
@@ -313,7 +320,7 @@ sap.ui.define([
                 body += '\n';
             }
 
-            this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', body);
+            this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', header + body);
         }
     });
 });
