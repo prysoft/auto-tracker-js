@@ -264,7 +264,28 @@ sap.ui.define([
         },
 
         saveChargeReport: function() {
-            this.saveToTextFile('FuelChargeReport.txt', 'Время;Получатель;По карте;Без карты');
+            var oModel = this.getView().getModel();
+            var requestedMessages = oModel.getProperty('/requestedMessages');
+            var fuelChargesReport = oModel.getProperty('/fuelChargesReport');
+            var fuelCardsMap = oModel.getProperty('/fuelCardsMap');
+
+            var refuelingTotal = ((fuelChargesReport && fuelChargesReport.refueling_total || 0) + '').replace('.', ',');
+            var theftTotal = ((fuelChargesReport && fuelChargesReport.theft_total || 0) + '').replace('.', ',');
+
+            var header = 'Дата/время;Получатель;По карте(л);Без карты(л)\n';
+            var body = '';
+            if (requestedMessages) {
+                for (var i = 0; i < requestedMessages.length; i++) {
+                    var msg = requestedMessages[i];
+                    body += periodFormat.format(msg.t) + ';'
+                        + this.formatRefuelingCardId(msg.theft_place, (msg.p && msg.p.refueling_card_id || undefined), fuelCardsMap) + ';'
+                        + ((msg.p && msg.p.refueling_amount || 0) + '').replace('.', ',') + ';'
+                        + ((msg.theft_amount || '') + '').replace('.', ',') + '\n';
+                    console.log(msg);
+                }
+            }
+            var footer = ';ИТОГО;' + refuelingTotal + ';' + theftTotal + '\n';
+            this.saveToBinaryFile('FuelChargeReport.csv', header + body + footer);
         }
     });
 });
