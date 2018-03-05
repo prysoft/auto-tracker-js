@@ -176,11 +176,16 @@ sap.ui.define([
                             content: [
                                 oTableHeader,
                                 new sap.m.ScrollContainer({
-                                    height: 'calc(100% - 3rem)',
+                                    height: 'calc(100% - 6rem)',
                                     width: '100%',
                                     horizontal: false,
                                     vertical: true,
                                     content: [oTable]
+                                }),
+                                new sap.m.Button({
+                                    icon: 'sap-icon://save',
+                                    type: 'Transparent',
+                                    press: (oCtrl.saveGenericReport).bind(oCtrl)
                                 })
                             ]
                         }));
@@ -286,6 +291,29 @@ sap.ui.define([
             }
             var footer = ';ИТОГО;' + refuelingTotal + ';' + theftTotal + '\n';
             this.saveToBinaryFile('FuelChargeReport.csv', header + body + footer);
+        },
+
+        saveGenericReport: function() {
+            var reportTabBar = this.getView().byId('reportTabBar');
+            var selectedKey = reportTabBar.getSelectedKey();
+            if (!selectedKey) {
+                return;
+            }
+            var tableName = selectedKey.replace(/^tab_/, '');
+            var oModel = sap.ui.getCore().byId(tableName + '_tbl').getModel();
+            var tableRows = oModel.getProperty('/');
+
+            var body = '';
+            for (var i = 0; i < tableRows.length; i++) {
+                var row = tableRows[i];
+                for (var j = 0 ; j < row.length; j++) {
+                    var cell = row[j];
+                    body += (j == 0 ? '' : ';') + cell;
+                }
+                body += '\n';
+            }
+
+            this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', body);
         }
     });
 });
