@@ -175,9 +175,19 @@ sap.ui.define([
         },
 
         saveToBinaryFile: function(filename, data) {
-            // At the beginning '\ufeff' (þÿ) the Byte Order Mark for UTF-16BE, '\ufffe' (ÿþ) - UTF-16(LE), \xEF \xBB \xBF - UTF-8
-            // 'data:application/octet-stream;charset=utf-16le;base64,' + btoa(encodeURIComponent('ЕQ%').replace(/%/g, '\\x'))
-            var url = 'data:application/octet-stream;charset=utf-16le;base64,//5mAG8AbwAgAGIAYQByAAoA';
+            // if necessary, the Byte Order Mark (BOM) is placed at the beginning of data.
+            // BOM for UTF-16BE: '\xfe\xff' (þÿ); BOM for UTF-16LE: '\xff\xfe' (ÿþ); BOM for UTF-8: \xef\xbb\xbf
+            var bomDict = {
+                'utf-16be': '\xfe\xff',  // þÿ
+                'utf-16le': '\xff\xfe',  // ÿþ
+                'utf-8': '\xef\xbb\xbf'  // ï»¿
+            };
+            //var url = 'data:application/octet-stream;charset=utf-16le;base64,//5mAG8AbwAgAGIAYQByAAoA';
+            var charset = 'utf-8';
+            var url = 'data:application/octet-stream;charset=' + charset + ';base64,'
+                + btoa((bomDict[charset] || '') + encodeURIComponent(data).replace(/%([0-9A-F]{2})/g, function toSolidBytes(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
             this._saveToFileFromUrl(filename, url);
         },
 
