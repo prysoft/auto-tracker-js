@@ -144,10 +144,12 @@ sap.ui.define([
                         // Merge data with fuel charge report
                         if (tbl.name === 'unit_thefts' && messages.length) {
                             for (var k = 0; k < tbl.values.length; k++) {
-                                var time = Date.parse(tbl.values[k][1]);
-                                var t = new Date(time);
-                                var dt = new Date(time);
-                                dt.setHours(0, 0, 0, 0);
+                                var t = oCtrl.parseDate(tbl.values[k][1]);
+                                var dt = null;
+                                if (t) {
+                                    dt = new Date(t.getTime());
+                                    dt.setHours(0, 0, 0, 0);
+                                }
                                 var theft_amount = (tbl.values[k][3]).replace(/([^\d^.]+)/g, '');
                                 if (!isNaN(theft_amount)) {
                                     theft_amount = parseFloat(theft_amount);

@@ -64,6 +64,21 @@ sap.ui.define([
             this.setCookie(name, '', options);
         },
 
+        parseDate: function(strDate) {
+            try {
+                var reformattedDate = strDate.replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6');
+                var time = Date.parse(reformattedDate);
+                if (isNaN(time)) {
+                    console.warn('unable to parse Date. Wialon value: ' + strDate);
+                    return null;
+                }
+                return new Date(time);
+            } catch(e) {
+                console.warn('unable to parse Date. Wialon value: ' + strDate);
+                return null;
+            }
+        },
+
         formatDateRelative: function(date) {
             if (Object.prototype.toString.call(date) !== '[object Date]') {
                 return;
