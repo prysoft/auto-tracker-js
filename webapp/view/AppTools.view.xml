@@ -27,7 +27,7 @@
                 <tnt:item>
                     <tnt:NavigationList>
                         <tnt:NavigationListItem app:params="start" text="{i18n>tAuto}" icon="sap-icon://car-rental" />
-                        <tnt:NavigationListItem app:params="techState" text="{i18n>tTechState}" icon="sap-icon://wrench" />
+                        <!--<tnt:NavigationListItem app:params="techState" text="{i18n>tTechState}" icon="sap-icon://wrench" />-->
                         <tnt:NavigationListItem app:params="fuelCsm" text="Отчёты" icon="sap-icon://document-text" />
                         <!-- icon="sap-icon://mileage" -->
                         <!--<tnt:NavigationListItem text="{i18n>tDrivers}" icon="sap-icon://group" visible="false"/>-->
