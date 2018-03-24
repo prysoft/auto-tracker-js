@@ -280,7 +280,7 @@ sap.ui.define([
             var refuelingTotal = ((fuelChargesReport && fuelChargesReport.refueling_total || 0) + '').replace('.', ',');
             var theftTotal = ((fuelChargesReport && fuelChargesReport.theft_total || 0) + '').replace('.', ',');
 
-            var header = 'Дата/время;Получатель;По карте(л);Без карты(л)\n';
+            var header = 'Дата/время;Получатель;По карте(л);Без карты(л)\r\n';
             var body = '';
             if (requestedMessages) {
                 for (var i = 0; i < requestedMessages.length; i++) {
@@ -288,11 +288,11 @@ sap.ui.define([
                     body += periodFormat.format(msg.t) + ';'
                         + this.formatRefuelingCardId(msg.theft_place, (msg.p && msg.p.refueling_card_id || undefined), fuelCardsMap) + ';'
                         + ((msg.p && msg.p.refueling_amount || 0) + '').replace('.', ',') + ';'
-                        + ((msg.theft_amount || '') + '').replace('.', ',') + '\n';
+                        + ((msg.theft_amount || '') + '').replace('.', ',') + '\r\n';
                     console.log(msg);
                 }
             }
-            var footer = ';ИТОГО;' + refuelingTotal + ';' + theftTotal + '\n';
+            var footer = ';ИТОГО;' + refuelingTotal + ';' + theftTotal + '\r\n';
             this.saveToBinaryFile('FuelChargeReport.csv', header + body + footer);
         },
 
@@ -310,7 +310,7 @@ sap.ui.define([
             for (var i = 0; i < tableHeader.length; i++) {
                 header += (i == 0 ? '' : ';') + tableHeader[i];
             }
-            header += '\n';
+            header += '\r\n';
 
             var tableRows = oModel.getProperty('/values');
             var body = '';
@@ -318,9 +318,12 @@ sap.ui.define([
                 var row = tableRows[i];
                 for (var j = 0 ; j < row.length; j++) {
                     var cell = row[j];
+                    if (typeof cell == 'number') {
+                        cell = (cell + '').replace('.', ',');
+                    }
                     body += (j == 0 ? '' : ';') + cell;
                 }
-                body += '\n';
+                body += '\r\n';
             }
 
             this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', header + body);

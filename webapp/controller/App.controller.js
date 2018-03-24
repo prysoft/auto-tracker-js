@@ -498,9 +498,18 @@ sap.ui.define([
                 }
                 var tblsWithDataCnt = 0;
                 for(var i = 0; i < tables.length; i++) {
-                    data.getTableRows(i, 0, tables[i].rows, (function(i, code, rows){
+                    var tbl = tables[i];
+                    data.getTableRows(i, 0, tbl.rows, (function(i, tbl, code, rows){
+                        var numCols = {};
+                        for (var hti = 0; hti < tbl.header_type.length; hti++) {
+                            var headerType = tbl.header_type[hti];
+                            if (/^(fuel_level_begin|filled|mileage|fuel_consumption_fls|avg_fuel_consumption_fls|avg_speed|max_speed)$/.test(headerType)) {
+                                numCols[hti] = null;
+                            }
+                        }
+
                         var rowValues = [];
-                        var columnSizes = new Array(tables[i].columns);
+                        var columnSizes = new Array(tbl.columns);
                         if (code) {
                             console.warn('data#getTableRows: ', wialon.core.Errors.getErrorText(code));
                         } else {
@@ -518,6 +527,12 @@ sap.ui.define([
                                         if (k < columnSizes.length && typeof cellValue == 'string') {
                                             columnSizes[k] = Math.max(columnSizes[k] || 0, cellValue.length);
                                         }
+                                        if (typeof cellValue == 'string' && k in numCols) {
+                                            var cellNumValue = cellValue.replace(/^\s*(\d[\d.]*)\s*[^$]*/g, '$1');
+                                            if (!isNaN(cellNumValue)) {
+                                                cellValue = parseFloat(cellNumValue);
+                                            }
+                                        }
                                         cellValues.push(cellValue);
                                     }
                                     if (cellValues.length) {
@@ -526,12 +541,12 @@ sap.ui.define([
                                 }
                             }
                         }
-                        tables[i].values = rowValues;
-                        tables[i].columnSizes = columnSizes;
+                        tbl.values = rowValues;
+                        tbl.columnSizes = columnSizes;
                         if (++tblsWithDataCnt >= tables.length) {
                             deferred.resolve(tables);
                         }
-                    }).bind(null, i));
+                    }).bind(null, i, tbl));
                 }
             });
 
