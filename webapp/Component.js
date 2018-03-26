@@ -55,11 +55,11 @@ sap.ui.define([
             var fuelCardsModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/fuel_cards.json'));
             fuelCardsModel.attachRequestCompleted(function(evt) {
                 var fuelCards = fuelCardsModel.getProperty('/');
-                var fuleCardsMap = {};
+                var fuelCardsMap = {};
                 for (var i = 0; i < fuelCards.length; i++) {
-                    fuleCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
+                    fuelCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
                 }
-                oModel.setProperty('/fuelCardsMap', fuleCardsMap);
+                oModel.setProperty('/fuelCardsMap', fuelCardsMap);
             });
         },
 
