@@ -141,6 +141,19 @@ sap.ui.define([
             }, this);
         },
 
+        _getMapCenterAndZoom: function() {
+            // Зная границы карты, получаем центр и зум
+            var mapContainer = $('#' + this.sId);
+            var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(
+                this._yMapGeoObjects.getBounds(),
+                [mapContainer.width(), mapContainer.height()]
+            );
+            // Устанавливаем максимальный размер зума 15
+            centerAndZoom.zoom = Math.min(15, centerAndZoom.zoom);
+
+            return centerAndZoom;
+        },
+
         _addGeoObjectsToMap: function(geoObjects) {
             if (geoObjects) {
                 this._yMapGeoObjects = new ymaps.GeoObjectCollection();
@@ -149,14 +162,8 @@ sap.ui.define([
                 }
 
                 this._yMap.geoObjects.add(this._yMapGeoObjects);
-                // Зная границы карты, получаем центр и зум
-                var mapContainer = $('#' + this.sId);
-                var mapState = ymaps.util.bounds.getCenterAndZoom(
-                    this._yMapGeoObjects.getBounds(),
-                    [mapContainer.width(), mapContainer.height()]
-                );
-                // Устанавливаем максимальный размер зума 15
-                mapState.zoom = Math.min(15, mapState.zoom);
+
+                var mapState = this._getMapCenterAndZoom();
                 this._yMap.setCenter(mapState.center, mapState.zoom);
                 //this._yMap.setBounds(this._yMapGeoObjects.getBounds()/*, {checkZoomRange:true}*/);
             }
@@ -280,7 +287,8 @@ sap.ui.define([
             var geoObj = this.findGeoObjectById(geoObjectId);
             if (geoObj) {
                 var yMap = this._yMap;
-                yMap.setBounds(this._yMapGeoObjects.getBounds()).then(function(){
+                var mapState = this._getMapCenterAndZoom();
+                yMap.setCenter(mapState.center, mapState.zoom).then(function(){
                     setTimeout(function(){
                         yMap.panTo(geoObj.geometry.getCoordinates()).then(function(){
                             setTimeout(function(){
