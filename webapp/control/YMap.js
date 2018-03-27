@@ -289,6 +289,7 @@ sap.ui.define([
                                 var maxZoom = 16;
                                 var zoomFunc = function() {
                                     if (zoom >= maxZoom) {
+                                        yMap.setBounds(yMap.getBounds(), {checkZoomRange:true}); //Для проверки валидности зума
                                         geoObj.animateObject();
                                         return;
                                     }
