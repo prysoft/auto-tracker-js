@@ -149,7 +149,16 @@ sap.ui.define([
                 }
 
                 this._yMap.geoObjects.add(this._yMapGeoObjects);
-                this._yMap.setBounds(this._yMapGeoObjects.getBounds()/*, {checkZoomRange:true}*/);
+                // Зная границы карты, получаем центр и зум
+                var mapContainer = $('#' + this.sId);
+                var mapState = ymaps.util.bounds.getCenterAndZoom(
+                    this._yMapGeoObjects.getBounds(),
+                    [mapContainer.width(), mapContainer.height()]
+                );
+                // Устанавливаем максимальный размер зума 15
+                mapState.zoom = Math.min(15, mapState.zoom);
+                this._yMap.setCenter(mapState.center, mapState.zoom);
+                //this._yMap.setBounds(this._yMapGeoObjects.getBounds()/*, {checkZoomRange:true}*/);
             }
         },
 
