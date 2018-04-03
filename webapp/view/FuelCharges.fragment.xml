@@ -1,5 +1,16 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" >
     <IconTabFilter text="Отпуск топлива" key="tab_fuelCharges">
+
+        <HBox alignItems="Center">
+            <Label text="Группировать:" />
+            <RadioButtonGroup columns="2" selectedIndex="1" select="onSelectGroupBy">
+                <buttons>
+                    <RadioButton id="groupByRcvr" text="по получателю" />
+                    <RadioButton id="groupByDate" text="по дате" />
+                </buttons>
+            </RadioButtonGroup>
+        </HBox>
+
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
         <Table showNoData="false">
             <columns>

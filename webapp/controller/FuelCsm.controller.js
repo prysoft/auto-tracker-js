@@ -2,8 +2,9 @@ sap.ui.define([
     'com/prysoft/autotracker/controller/App.controller',
     'sap/ui/core/format/DateFormat',
     'sap/ui/model/Filter',
-    'jquery.sap.global'
-], function(Controller, DateFormat, Filter, $){
+    'jquery.sap.global',
+    'sap/m/MessageToast'
+], function(Controller, DateFormat, Filter, $, MessageToast){
     'use strict';
 
     var periodFormat = DateFormat.getInstance({
@@ -327,6 +328,19 @@ sap.ui.define([
             }
 
             this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', header + body);
+        },
+
+        onSelectGroupBy: function(oEvt) {
+            var btn = oEvt.getSource().getSelectedButton();
+            var btnId = btn.getId();
+            switch(btnId) {
+                case 'groupByRcvr':
+                    MessageToast.show('Группировка по получателю временно недоступна');
+                    break;
+                case 'groupByDate':
+                    MessageToast.show('Выполнена группировка по дате');
+                    break;
+            }
         }
     });
 });

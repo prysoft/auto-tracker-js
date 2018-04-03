@@ -209,7 +209,8 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
 .unit-std-listitem .sapMSLITitle {font-size: 0.875rem; font-weight:bold;}
 
 .sap-ui-custom-extra .tblBodyWithHeaderAndFooter {
-    max-height: calc(100% - 6rem);
+    /* 3rem header + 3rem footer + 3rem radio buttons = 9rem */
+    max-height: calc(100% - 9rem);
     min-height: 6rem;
 }
 
