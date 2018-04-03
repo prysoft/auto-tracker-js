@@ -1,3 +1,11 @@
+/* desktop full width */
+html.sap-ui-custom-extra.sap-desktop .sapMShellCentralBox {
+    width: 100%;
+    margin-left: 0;
+    left: 0;
+    box-shadow: none;
+}
+
 .sap-ui-custom-extra .sapThemeNegativeText {
     color: #e52929;
 }
