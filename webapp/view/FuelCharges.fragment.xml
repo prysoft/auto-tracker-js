@@ -3,7 +3,7 @@
 
         <HBox alignItems="Center">
             <Label text="Группировать:" />
-            <RadioButtonGroup columns="2" selectedIndex="1" select="onSelectGroupBy">
+            <RadioButtonGroup id="groupingOption" columns="2" select="onSelectGroupBy">
                 <buttons>
                     <RadioButton id="groupByRcvr" text="по получателю" />
                     <RadioButton id="groupByDate" text="по дате" />
@@ -14,6 +14,9 @@
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
         <Table showNoData="false">
             <columns>
+                <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
+                    <Text text="Дата" />
+                </Column>
                 <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
                     <Text text="Время" />
                 </Column>
@@ -30,9 +33,10 @@
         </Table>
         <ScrollContainer height="auto" width="100%" horizontal="false" vertical="true" class="tblBodyWithHeaderAndFooter">
             <Table id="tblFuelMessages"
-                   items="{path: '/requestedMessages', sorter:[{path:'dt', descending:true, group:'.getMsgGroup'}, {path:'t'}], groupHeaderFactory: '.getMsgGroupHeader'}">
+                   items="{path: '/requestedMessages', groupHeaderFactory: '.getMsgGroupHeader'}">
                 <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
                 <columns>
+                    <Column width="6em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column />
                     <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
@@ -42,13 +46,14 @@
                     <ColumnListItem>
                         <cells>
                             <!--<ObjectIdentifier title="{vn}.{vt}" />-->
+                            <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'dd.MM.yy'}}" />
                             <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
                             <Text text="{parts:['theft_place', 'p/refueling_card_id', '/fuelCardsMap'], formatter: '.formatRefuelingCardId'}" />
                             <Text text="{= ${p/refueling_amount} === undefined ? '---' : Math.abs(${p/refueling_amount}) &lt; 1.0
-                            ? ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:2 }}
+                            ? ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }}
                             : ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:0 }} }" />
                             <Text text="{= Math.abs(${theft_amount}) &lt; 1.0
-                            ? ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:2 }}
+                            ? ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }}
                             : ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:0 }} }" />
                         </cells>
                         <customData>

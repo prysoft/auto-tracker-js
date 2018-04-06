@@ -1,10 +1,10 @@
 sap.ui.define([
     'com/prysoft/autotracker/controller/App.controller',
     'sap/ui/core/format/DateFormat',
+    'sap/ui/model/Sorter',
     'sap/ui/model/Filter',
-    'jquery.sap.global',
-    'sap/m/MessageToast'
-], function(Controller, DateFormat, Filter, $, MessageToast){
+    'jquery.sap.global'
+], function(Controller, DateFormat, Sorter, Filter, $){
     'use strict';
 
     var periodFormat = DateFormat.getInstance({
@@ -33,6 +33,7 @@ sap.ui.define([
             };
 
             this.getView().setBusyIndicatorDelay(300);
+            setTimeout((function(){ this._fuelCardsMap = this.getView().getModel().getProperty('/fuelCardsMap'); }).bind(this), 0);
         },
 
         _getPeriodDates: function() {
@@ -203,6 +204,16 @@ sap.ui.define([
 
                     oView.getModel().setProperty('/requestedMessages', messages);
                     oView.getModel().setProperty('/fuelChargesReport', {refueling_total: refueling_total, theft_total: theft_total});
+
+                    // Apply grouping and sorting after updating data
+                    var groupingOption = sap.ui.getCore().byId('groupingOption');
+                    if (groupingOption) {
+                        var optIdx = groupingOption.getSelectedIndex();
+                        var groupButtons = groupingOption.getButtons();
+                        if (optIdx > -1 && optIdx < groupButtons.length) {
+                            oCtrl._sortFuelChargeReport(groupButtons[optIdx].getId())
+                        }
+                    }
                 }).always(function(){
                     oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
                     oView.setBusy(false);
@@ -239,11 +250,68 @@ sap.ui.define([
             };
         },
 
+        getCardIdGroup: function(oContext) {
+            var cardId = oContext.getProperty('p/refueling_card_id');
+
+            // Если cardId undefined считаем слив
+            var refuelingAmount = cardId === undefined ? oContext.getProperty('theft_amount') || 0 : oContext.getProperty('p/refueling_amount') || 0;
+            var refuelingAmountFormatted = (refuelingAmount < 1.0 ? parseFloat(refuelingAmount.toFixed(4)) + '' : refuelingAmount.toFixed(0)).replace('.', ',');
+
+            var groupRecord = this._groupMap[cardId];
+            if (!groupRecord) {
+                var fuelCard = cardId === undefined ? {name: 'Слив'} : this._fuelCardsMap[cardId];
+                var groupTitle = fuelCard ? fuelCard.name : 'id:' + cardId;
+
+                return {
+                    key: cardId,
+                    titleText: groupTitle,
+                    title: groupTitle + ' \u2014 ' + refuelingAmountFormatted,
+                    refuellingTotal: refuelingAmount
+                };
+            }
+
+            var oGroup = groupRecord.oGroup;
+            var groupTotal = oGroup.refuellingTotal += refuelingAmount;
+            var groupTotalFormatted = (groupTotal < 1.0 ? parseFloat(groupTotal.toFixed(4)) + '' : groupTotal.toFixed(0)).replace('.', ',');
+            groupRecord.groupHeader.setTitle(oGroup.titleText + ' \u2014 ' + groupTotalFormatted);
+            return oGroup;
+        },
+
         getMsgGroupHeader: function(oGroup) {
-            return new sap.m.GroupHeaderListItem({
+            var groupHeader = new sap.m.GroupHeaderListItem({
                 title: oGroup.title,
                 upperCase: false
             });
+            if (!(oGroup.key in this._groupMap)) {
+                this._groupMap[oGroup.key] = {groupHeader: groupHeader, oGroup: oGroup};
+            }
+            return groupHeader;
+        },
+
+        _sortFuelChargeReport: function(groupOption) {
+            this._groupMap = {};
+
+            var sorters = [];
+            switch(groupOption) {
+                case 'groupByRcvr':
+                    sorters.push(new Sorter('p/refueling_card_id', false, (this.getCardIdGroup).bind(this)));
+                    sorters.push(new Sorter('dt', true));
+                    break;
+                case 'groupByDate':
+                    sorters.push(new Sorter('dt', true, (this.getMsgGroup).bind(this)));
+                    break;
+                default: return;
+            }
+            sorters.push(new Sorter('t'));
+
+            var tblFuelMessages = sap.ui.getCore().byId('tblFuelMessages');
+            tblFuelMessages.getBinding('items').sort(sorters);
+        },
+
+        onSelectGroupBy: function(oEvt) {
+            var btn = oEvt.getSource().getSelectedButton();
+            var btnId = btn.getId();
+            this._sortFuelChargeReport(btnId);
         },
 
         formatRefuelingCardId: function(theftPlace, cardId, fuelCardsMap) {
@@ -328,19 +396,6 @@ sap.ui.define([
             }
 
             this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', header + body);
-        },
-
-        onSelectGroupBy: function(oEvt) {
-            var btn = oEvt.getSource().getSelectedButton();
-            var btnId = btn.getId();
-            switch(btnId) {
-                case 'groupByRcvr':
-                    MessageToast.show('Группировка по получателю временно недоступна');
-                    break;
-                case 'groupByDate':
-                    MessageToast.show('Выполнена группировка по дате');
-                    break;
-            }
         }
     });
 });
