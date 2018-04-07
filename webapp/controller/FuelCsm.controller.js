@@ -363,13 +363,15 @@ sap.ui.define([
             for(var i = 0; i < tblItems.length; i++) {
                 if (tblItems[i] instanceof sap.m.ColumnListItem) {
                     var cells = tblItems[i].getCells();
-                    body += cells[0].getText() + ' ' + cells[1].getText() + ';'
-                        + cells[2].getText() + ';'
-                        + cells[3].getText() + ';'
-                        + cells[4].getText() + ';'
-                        + cells[5].getText() + '\r\n';
+                    var tblRow = '';
+                    for (var j = 0; j < cells.length; j++) {
+                        tblRow += cells[j].getText() + (j < cells.length - 1 ? ';' : '');
+                    }
+                    body += tblRow + '\r\n';
+                } else if (tblItems[i] instanceof sap.m.GroupHeaderListItem) {
+                    body += tblItems[i].getTitle() + '\r\n';
                 } else {
-
+                    body += '\r\n';
                 }
             }
 
