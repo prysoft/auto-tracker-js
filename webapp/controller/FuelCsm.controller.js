@@ -10,6 +10,9 @@ sap.ui.define([
     var periodFormat = DateFormat.getInstance({
         pattern: 'dd.MM.yy HH:mm'
     });
+    var periodDtFormat = DateFormat.getInstance({
+        pattern: 'dd.MM.yy'
+    });
     var dateFormat = DateFormat.getInstance({
         pattern: 'dd MMM yyyy'
     });
@@ -84,6 +87,18 @@ sap.ui.define([
 
             //this.getView().byId('tblFuelMessages').setHeaderText(periodFormat.format(from) + ' - ' + periodFormat.format(to));
             return [from, to];
+        },
+
+        _getGroupingOptId: function() {
+            var groupingOption = sap.ui.getCore().byId('groupingOption');
+            if (groupingOption) {
+                var optIdx = groupingOption.getSelectedIndex();
+                var groupButtons = groupingOption.getButtons();
+                if (optIdx > -1 && optIdx < groupButtons.length) {
+                    return groupButtons[optIdx].getId();
+                }
+            }
+            return null;
         },
 
         _requestMessages: function() {
@@ -206,13 +221,9 @@ sap.ui.define([
                     oView.getModel().setProperty('/fuelChargesReport', {refueling_total: refueling_total, theft_total: theft_total});
 
                     // Apply grouping and sorting after updating data
-                    var groupingOption = sap.ui.getCore().byId('groupingOption');
-                    if (groupingOption) {
-                        var optIdx = groupingOption.getSelectedIndex();
-                        var groupButtons = groupingOption.getButtons();
-                        if (optIdx > -1 && optIdx < groupButtons.length) {
-                            oCtrl._sortFuelChargeReport(groupButtons[optIdx].getId())
-                        }
+                    var optId = oCtrl._getGroupingOptId();
+                    if (optId) {
+                        oCtrl._sortFuelChargeReport(optId);
                     }
                 }).always(function(){
                     oView.byId('fuelChargePage').setTitle('Отчет. ' + selectedUnit.getBindingContext().getProperty('name'));
@@ -322,7 +333,7 @@ sap.ui.define([
                 return '---';
             }
             var fuelCard = fuelCardsMap[cardId];
-            return fuelCard ? fuelCard.name + ' (id:' + cardId + ')' : 'id:' + cardId + ' (отсутствует в справочнике)';
+            return fuelCard ? fuelCard.name : '(отсутствует в справочнике)';
         },
 
         onSearch : function (oEvt) {
@@ -341,27 +352,31 @@ sap.ui.define([
         },
 
         saveChargeReport: function() {
-            var oModel = this.getView().getModel();
-            var requestedMessages = oModel.getProperty('/requestedMessages');
-            var fuelChargesReport = oModel.getProperty('/fuelChargesReport');
-            var fuelCardsMap = oModel.getProperty('/fuelCardsMap');
+            var title = 'Отпуск топлива ' + (this._getGroupingOptId() == 'groupByRcvr' ? 'по получателям' : 'по дате') + '\r\n';
+            var prd = this._getPeriodDates();
+            var subtitle = 'Период: ' + (prd ? 'c ' + periodDtFormat.format(prd[0]) + ' по ' + periodDtFormat.format(prd[1]) : '') + '\r\n';
+            var header = title + subtitle + 'Дата/время;Получатель;ID;По карте(л);Без карты(л)\r\n';
 
-            var refuelingTotal = ((fuelChargesReport && fuelChargesReport.refueling_total || 0) + '').replace('.', ',');
-            var theftTotal = ((fuelChargesReport && fuelChargesReport.theft_total || 0) + '').replace('.', ',');
-
-            var header = 'Дата/время;Получатель;По карте(л);Без карты(л)\r\n';
             var body = '';
-            if (requestedMessages) {
-                for (var i = 0; i < requestedMessages.length; i++) {
-                    var msg = requestedMessages[i];
-                    body += periodFormat.format(msg.t) + ';'
-                        + this.formatRefuelingCardId(msg.theft_place, (msg.p && msg.p.refueling_card_id || undefined), fuelCardsMap) + ';'
-                        + ((msg.p && msg.p.refueling_amount || 0) + '').replace('.', ',') + ';'
-                        + ((msg.theft_amount || '') + '').replace('.', ',') + '\r\n';
-                    console.log(msg);
+            var tblFuelMessages = sap.ui.getCore().byId('tblFuelMessages');
+            var tblItems = tblFuelMessages.getItems();
+            for(var i = 0; i < tblItems.length; i++) {
+                if (tblItems[i] instanceof sap.m.ColumnListItem) {
+                    var cells = tblItems[i].getCells();
+                    body += cells[0].getText() + ' ' + cells[1].getText() + ';'
+                        + cells[2].getText() + ';'
+                        + cells[3].getText() + ';'
+                        + cells[4].getText() + ';'
+                        + cells[5].getText() + '\r\n';
+                } else {
+
                 }
             }
-            var footer = ';ИТОГО;' + refuelingTotal + ';' + theftTotal + '\r\n';
+
+            var tblFuelMsgFooter = sap.ui.getCore().byId('tblFuelMsgFooter');
+            var refuelingTotal = tblFuelMsgFooter.getColumns()[2].getFooter().getText();
+            var theftTotal = tblFuelMsgFooter.getColumns()[3].getFooter().getText();
+            var footer = ';ИТОГО;;' + refuelingTotal + ';' + theftTotal + '\r\n';
             this.saveToBinaryFile('FuelChargeReport.csv', header + body + footer);
         },
 

@@ -14,14 +14,17 @@
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
         <Table showNoData="false">
             <columns>
-                <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
+                <Column width="4em" minScreenWidth="Tablet" demandPopin="true">
                     <Text text="Дата" />
                 </Column>
-                <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true">
+                <Column width="3.5em" minScreenWidth="Tablet" demandPopin="true">
                     <Text text="Время" />
                 </Column>
                 <Column>
                     <Text text="Получатель" />
+                </Column>
+                <Column width="5em" minScreenWidth="Tablet" demandPopin="true">
+                    <Text text="ID" />
                 </Column>
                 <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <Text text="По карте, л" />
@@ -39,8 +42,9 @@
                     <Column width="6em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column width="4.5em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column />
-                    <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
-                    <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
+                    <Column width="6.5em" minScreenWidth="Tablet" demandPopin="true" />
+                    <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
+                    <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />
                 </columns>
                 <items>
                     <ColumnListItem>
@@ -49,6 +53,7 @@
                             <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'dd.MM.yy'}}" />
                             <Text text="{path: 't', type: 'sap.ui.model.type.Date', formatOptions: {pattern:'HH:mm'}}" />
                             <Text text="{parts:['theft_place', 'p/refueling_card_id', '/fuelCardsMap'], formatter: '.formatRefuelingCardId'}" />
+                            <Text text="{p/refueling_card_id}" />
                             <Text text="{= ${p/refueling_amount} === undefined ? '---' : Math.abs(${p/refueling_amount}) &lt; 1.0
                             ? ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }}
                             : ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:0 }} }" />
@@ -63,7 +68,7 @@
                 </items>
             </Table>
         </ScrollContainer>
-        <Table showNoData="false">
+        <Table id="tblFuelMsgFooter" showNoData="false">
             <columns>
                 <Column width="5em" styleClass="no-horizontal-padding">
                     <footer>
@@ -75,12 +80,12 @@
                         <Text text="ИТОГО" />
                     </footer>
                 </Column>
-                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
                         <Text text="{path: '/fuelChargesReport/refueling_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 0} }" />
                     </footer>
                 </Column>
-                <Column width="6em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+                <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
                         <Text text="{path: '/fuelChargesReport/theft_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 0} }" />
                     </footer>
