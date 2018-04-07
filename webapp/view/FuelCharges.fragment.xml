@@ -36,7 +36,7 @@
                    items="{path: '/requestedMessages', groupHeaderFactory: '.getMsgGroupHeader'}">
                 <!-- mergeDuplicates="true" group:true ,{path:'t', descending:false} -->
                 <columns>
-                    <Column width="9em" minScreenWidth="Tablet" demandPopin="true" />
+                    <Column width="9.5em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column />
                     <Column width="6.5em" minScreenWidth="Tablet" demandPopin="true" />
                     <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right" />

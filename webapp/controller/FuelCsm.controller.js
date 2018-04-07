@@ -17,6 +17,10 @@ sap.ui.define([
         pattern: 'dd MMM yyyy'
     });
 
+    var roundAndFormatFloat = function(flNum) {
+        return !flNum ? '' : (flNum < 1.0 ? parseFloat(flNum.toFixed(4)) + '' : flNum.toFixed(0)).replace('.', ',');
+    };
+
     var selectedUnit;
 
     return Controller.extend('com.prysoft.autotracker.controller.FuelCsm', {
@@ -257,6 +261,7 @@ sap.ui.define([
             var date = oContext.getProperty('dt');
             return {
                 key: date && date.getTime(),
+                grouping: 'groupByDate',
                 title: date && dateFormat.format(date)
             };
         },
@@ -264,9 +269,9 @@ sap.ui.define([
         getCardIdGroup: function(oContext) {
             var cardId = oContext.getProperty('p/refueling_card_id');
 
+            var refuelingAmount = oContext.getProperty('p/refueling_amount') || 0;
             // Если cardId undefined считаем слив
-            var refuelingAmount = cardId === undefined ? oContext.getProperty('theft_amount') || 0 : oContext.getProperty('p/refueling_amount') || 0;
-            var refuelingAmountFormatted = (refuelingAmount < 1.0 ? parseFloat(refuelingAmount.toFixed(4)) + '' : refuelingAmount.toFixed(0)).replace('.', ',');
+            var theftAmount = oContext.getProperty('theft_amount') || 0;
 
             var groupRecord = this._groupMap[cardId];
             if (!groupRecord) {
@@ -275,24 +280,38 @@ sap.ui.define([
 
                 return {
                     key: cardId,
-                    titleText: groupTitle,
-                    title: groupTitle + ' \u2014 ' + refuelingAmountFormatted,
-                    refuellingTotal: refuelingAmount
+                    grouping: 'groupByRcvr',
+                    title: groupTitle,
+                    refuellingTotal: refuelingAmount,
+                    theftTotal: theftAmount
                 };
             }
 
             var oGroup = groupRecord.oGroup;
-            var groupTotal = oGroup.refuellingTotal += refuelingAmount;
-            var groupTotalFormatted = (groupTotal < 1.0 ? parseFloat(groupTotal.toFixed(4)) + '' : groupTotal.toFixed(0)).replace('.', ',');
-            groupRecord.groupHeader.setTitle(oGroup.titleText + ' \u2014 ' + groupTotalFormatted);
+            var groupCells = groupRecord.groupHeader.getCells();
+            groupCells[3].setText(roundAndFormatFloat(oGroup.refuellingTotal += refuelingAmount));
+            groupCells[4].setText(roundAndFormatFloat(oGroup.theftTotal += theftAmount));
             return oGroup;
         },
 
         getMsgGroupHeader: function(oGroup) {
-            var groupHeader = new sap.m.GroupHeaderListItem({
-                title: oGroup.title,
-                upperCase: false
-            });
+            var groupHeader;
+            if (oGroup.grouping == 'groupByRcvr') {
+                var rflTotalFormatted = roundAndFormatFloat(oGroup.refuellingTotal);
+                var theftTotalFormatted = roundAndFormatFloat(oGroup.theftTotal);
+                var cells = [];
+                cells.push(new sap.m.Text({text: ''}));
+                cells.push(new sap.m.Text({text: oGroup.title}));
+                cells.push(new sap.m.Text({text: oGroup.key}));
+                cells.push(new sap.m.Text({text: rflTotalFormatted}));
+                cells.push(new sap.m.Text({text: theftTotalFormatted}));
+                groupHeader = new sap.m.ColumnListItem({ cells: cells }).addStyleClass('sapMGHLI groupingGHCLM');
+            } else {
+                groupHeader = new sap.m.GroupHeaderListItem({
+                    title: oGroup.title,
+                    upperCase: false
+                });
+            }
             if (!(oGroup.key in this._groupMap)) {
                 this._groupMap[oGroup.key] = {groupHeader: groupHeader, oGroup: oGroup};
             }

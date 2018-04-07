@@ -218,3 +218,15 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
     padding-top:0;
     padding-bottom:0;
 }
+
+.sap-ui-custom-extra .sapMGHLI.groupingGHCLM .sapMListTblCell {
+    padding: 0 .5rem;
+}
+
+.sap-ui-custom-extra .sapMListUl .sapMLIB.sapMGHLI.groupingGHCLM .sapMText {
+    font-weight: bold;
+    color: #147575;
+}
+.sap-ui-custom-extra .sapMListUl .sapMLIB.sapMGHLI {
+    font-weight: bold;
+}
