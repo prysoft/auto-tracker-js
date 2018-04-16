@@ -257,13 +257,34 @@ sap.ui.define([
             this._requestMessages();
         },
 
+        _calcGroupData: function(groupRecord, refuelingAmount, theftAmount) {
+            var oGroup = groupRecord.oGroup;
+            var groupCells = groupRecord.groupHeader.getCells();
+            groupCells[3].setText(roundAndFormatFloat(oGroup.refuellingTotal += refuelingAmount));
+            groupCells[4].setText(roundAndFormatFloat(oGroup.theftTotal += theftAmount));
+            return oGroup;
+        },
+
         getMsgGroup: function(oContext) {
             var date = oContext.getProperty('dt');
-            return {
-                key: date && date.getTime(),
-                grouping: 'groupByDate',
-                title: date && dateFormat.format(date)
-            };
+
+            var refuelingAmount = oContext.getProperty('p/refueling_amount') || 0;
+            // Если cardId undefined считаем слив
+            var theftAmount = oContext.getProperty('theft_amount') || 0;
+
+            var dtKey = date && date.getTime() || null;
+            var groupRecord = this._groupMap[dtKey];
+            if (!groupRecord) {
+                return {
+                    key: dtKey,
+                    grouping: 'groupByDate',
+                    title: date && dateFormat.format(date) || '',
+                    refuellingTotal: refuelingAmount,
+                    theftTotal: theftAmount
+                };
+            }
+
+            return this._calcGroupData(groupRecord, refuelingAmount, theftAmount);
         },
 
         getCardIdGroup: function(oContext) {
@@ -287,34 +308,31 @@ sap.ui.define([
                 };
             }
 
-            var oGroup = groupRecord.oGroup;
-            var groupCells = groupRecord.groupHeader.getCells();
-            groupCells[3].setText(roundAndFormatFloat(oGroup.refuellingTotal += refuelingAmount));
-            groupCells[4].setText(roundAndFormatFloat(oGroup.theftTotal += theftAmount));
-            return oGroup;
+            return this._calcGroupData(groupRecord, refuelingAmount, theftAmount);
         },
 
         getMsgGroupHeader: function(oGroup) {
+            var rflTotalFormatted = roundAndFormatFloat(oGroup.refuellingTotal);
+            var theftTotalFormatted = roundAndFormatFloat(oGroup.theftTotal);
+            var cells = [];
             var groupHeader;
             if (oGroup.grouping == 'groupByRcvr') {
-                var rflTotalFormatted = roundAndFormatFloat(oGroup.refuellingTotal);
-                var theftTotalFormatted = roundAndFormatFloat(oGroup.theftTotal);
-                var cells = [];
                 cells.push(new sap.m.Text({text: ''}));
                 cells.push(new sap.m.Text({text: oGroup.title}));
                 cells.push(new sap.m.Text({text: oGroup.key}));
-                cells.push(new sap.m.Text({text: rflTotalFormatted}));
-                cells.push(new sap.m.Text({text: theftTotalFormatted}));
-                groupHeader = new sap.m.ColumnListItem({ cells: cells }).addStyleClass('sapMGHLI groupingGHCLM');
             } else {
-                groupHeader = new sap.m.GroupHeaderListItem({
-                    title: oGroup.title,
-                    upperCase: false
-                });
+                cells.push(new sap.m.Text({text: oGroup.title}));
+                cells.push(new sap.m.Text({text: ''}));
+                cells.push(new sap.m.Text({text: ''}));
             }
+            cells.push(new sap.m.Text({text: rflTotalFormatted}));
+            cells.push(new sap.m.Text({text: theftTotalFormatted}));
+            groupHeader = new sap.m.ColumnListItem({ cells: cells }).addStyleClass('sapMGHLI groupingGHCLM');
+
             if (!(oGroup.key in this._groupMap)) {
                 this._groupMap[oGroup.key] = {groupHeader: groupHeader, oGroup: oGroup};
             }
+
             return groupHeader;
         },
 
