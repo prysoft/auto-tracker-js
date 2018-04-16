@@ -450,6 +450,20 @@ sap.ui.define([
             }
 
             this.saveToBinaryFile(tableName.replace(/^unit_/, '') + '_report.csv', header + body);
+        },
+
+        _getLcDialog: function() {
+            if (!this.lcDlg) {
+                this.lcDlg = sap.ui.xmlfragment('com.prysoft.autotracker.view.LocationDialog', this);
+                this.getView().addDependent(this.lcDlg);
+            }
+            return this.lcDlg;
+        },
+        onPressOpenLcDialog: function() {
+            this._getLcDialog().open();
+        },
+        onPressCloseLcDialog: function() {
+            this._getLcDialog().close();
         }
     });
 });
