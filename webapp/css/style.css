@@ -230,3 +230,10 @@ html:not([data-sap-ui-animation='off']).sap-ui-custom-extra.sap-phone .sapTntToo
 .sap-ui-custom-extra .sapMListUl .sapMLIB.sapMGHLI {
     font-weight: bold;
 }
+
+.sap-ui-custom-extra #tblFuelMessages tr.sapMLIB.sapMListTblRow:not(.groupingGHCLM) { display: none; }
+.sap-ui-custom-extra #tblFuelMessages .sapMListTbl .sapMGHLI.sapMLIB,
+.sap-ui-custom-extra #tblFuelMessages .sapMListTbl .sapMGHLI.sapMLIB.sapMLIBActive > td {
+    background: #f2f2f2;
+}
+.sap-ui-custom-extra #tblFuelMessages .sapMListTbl .sapMGHLI.sapMLIB.sapMLIBActive.sapMLIBFocusable:focus {outline-color: black;}

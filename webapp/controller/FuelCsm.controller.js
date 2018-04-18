@@ -312,10 +312,14 @@ sap.ui.define([
         },
 
         getMsgGroupHeader: function(oGroup) {
+            var groupHeader = this._groupMap[oGroup.key] && this._groupMap[oGroup.key].groupHeader || null;
+            if (groupHeader) {
+                return groupHeader;
+            }
+
             var rflTotalFormatted = roundAndFormatFloat(oGroup.refuellingTotal);
             var theftTotalFormatted = roundAndFormatFloat(oGroup.theftTotal);
             var cells = [];
-            var groupHeader;
             if (oGroup.grouping == 'groupByRcvr') {
                 cells.push(new sap.m.Text({text: ''}));
                 cells.push(new sap.m.Text({text: oGroup.title}));
@@ -327,13 +331,20 @@ sap.ui.define([
             }
             cells.push(new sap.m.Text({text: rflTotalFormatted}));
             cells.push(new sap.m.Text({text: theftTotalFormatted}));
-            groupHeader = new sap.m.ColumnListItem({ cells: cells }).addStyleClass('sapMGHLI groupingGHCLM');
 
-            if (!(oGroup.key in this._groupMap)) {
-                this._groupMap[oGroup.key] = {groupHeader: groupHeader, oGroup: oGroup};
-            }
+            groupHeader = new sap.m.ColumnListItem({ cells: cells, type: 'Active', press: [this.handleGroupHeaderPress, this] }).addStyleClass('sapMGHLI groupingGHCLM');
+
+            this._groupMap[oGroup.key] = {groupHeader: groupHeader, oGroup: oGroup};
 
             return groupHeader;
+        },
+
+        handleGroupHeaderPress: function(oEvt) {
+            var nextRow = oEvt.getSource().$().next();
+            while(nextRow.hasClass('sapMLIB') && !nextRow.hasClass('groupingGHCLM')) {
+                nextRow.toggle();
+                nextRow = nextRow.next();
+            }
         },
 
         _sortFuelChargeReport: function(groupOption) {
