@@ -40,7 +40,6 @@ sap.ui.define([
             };
 
             this.getView().setBusyIndicatorDelay(300);
-            setTimeout((function(){ this._fuelCardsMap = this.getView().getModel().getProperty('/fuelCardsMap'); }).bind(this), 0);
         },
 
         _getPeriodDates: function() {
@@ -296,7 +295,7 @@ sap.ui.define([
 
             var groupRecord = this._groupMap[cardId];
             if (!groupRecord) {
-                var fuelCard = cardId === undefined ? {name: 'Слив'} : this._fuelCardsMap[cardId];
+                var fuelCard = cardId === undefined ? {name: 'Слив'} : this.getFuelCardsMap()[cardId];
                 var groupTitle = fuelCard ? fuelCard.name : 'id:' + cardId;
 
                 return {

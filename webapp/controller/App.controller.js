@@ -51,6 +51,13 @@ sap.ui.define([
             console.log('APP_INIT');
         },
 
+        getFuelCardsMap: function() {
+            if (!this._fuelCardsMap) {
+                this._fuelCardsMap = this.getView().getModel().getProperty('/fuelCardsMap');
+            }
+            return this._fuelCardsMap;
+        },
+
         _saveAvlResources: function(avlResources) {
             if (!avlResources) {
                 console.warn('avl_resource: ', 'No resources loaded');

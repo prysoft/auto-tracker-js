@@ -55,6 +55,13 @@ sap.ui.define([
                     }, 300);
                 });
             }, this);
+        },
+
+        formatFuelReceiver: function(sensor) {
+            if (sensor.param == 'refueling_card_id') {
+                var map = this.getFuelCardsMap();
+                return map && (sensor.value in map) ? map[sensor.value].name : 'id:' + sensor.value;
+            }
         }
     });
 });

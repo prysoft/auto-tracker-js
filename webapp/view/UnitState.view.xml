@@ -65,7 +65,13 @@
             </Panel>
             <List items="{ path: 'sensors', sorter: {path: 'order'}, filters:[{path: 'visible', operator: 'EQ', value1: true}] }" showNoData="false" class="sensor-list">
                 <DisplayListItem label="{name}"
-                                 value="{= ${value} === null ? '---' : RegExp('^on\/off$', 'i').test(${measure}) ? (${value} === 1 ? 'Вкл' : 'Выкл') : (${param} === 'refueling_card_id' ? ${/fuelCardsMap/3286417/name} : ${value} + ' ' + ${measure}) }"
+                                 value="{= ${value} === null
+                                             ? '---'
+                                             : RegExp('^on\/off$', 'i').test(${measure})
+                                                 ? (${value} === 1 ? 'Вкл' : 'Выкл')
+                                                 : (${param} === 'refueling_card_id'
+                                                     ? ${path: '', formatter: '.formatFuelReceiver'}
+                                                     : ${value} + ' ' + ${measure}) }"
                                  class="text-color-engine-sens">
                     <customData>
                         <core:CustomData key="engine-on" value="val{value}" writeToDom="{= RegExp('^on\/off$', 'i').test(${measure}) }" />
