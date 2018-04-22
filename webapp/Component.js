@@ -52,7 +52,7 @@ sap.ui.define([
             var oModel = new JSONModel(oData);
             this.setModel(oModel);
 
-            var fuelCardsModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/fuel_cards.json'));
+            var fuelCardsModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/fuel_cards.json?ts=' + new Date().getTime()));
             fuelCardsModel.attachRequestCompleted(function(evt) {
                 var fuelCards = fuelCardsModel.getProperty('/');
                 var fuelCardsMap = {};
