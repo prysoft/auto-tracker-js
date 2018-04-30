@@ -51,10 +51,10 @@
                             <Text text="{p/refueling_card_id}" />
                             <Text text="{= ${p/refueling_amount} === undefined ? '---' : Math.abs(${p/refueling_amount}) &lt; 1.0
                             ? ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }}
-                            : ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:0 }} }" />
+                            : ${path: 'p/refueling_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }} }" />
                             <Text text="{= Math.abs(${theft_amount}) &lt; 1.0
                             ? ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }}
-                            : ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:0 }} }" />
+                            : ${path: 'theft_amount', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits:4 }} }" />
                         </cells>
                         <customData>
                             <core:CustomData key="err" value="true" writeToDom="{= !!${theft_amount} }" />
@@ -77,12 +77,12 @@
                 </Column>
                 <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
-                        <Text text="{path: '/fuelChargesReport/refueling_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 0} }" />
+                        <Text text="{path: '/fuelChargesReport/refueling_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 4} }" />
                     </footer>
                 </Column>
                 <Column width="7em" minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
                     <footer>
-                        <Text text="{path: '/fuelChargesReport/theft_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 0} }" />
+                        <Text text="{path: '/fuelChargesReport/theft_total', type: 'sap.ui.model.type.Float', formatOptions: {groupingEnabled:true, groupingSeparator:' ', maxFractionDigits: 4} }" />
                     </footer>
                 </Column>
             </columns>

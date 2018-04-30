@@ -18,7 +18,8 @@ sap.ui.define([
     });
 
     var roundAndFormatFloat = function(flNum) {
-        return !flNum ? '' : (flNum < 1.0 ? parseFloat(flNum.toFixed(4)) + '' : flNum.toFixed(0)).replace('.', ',');
+        //return !flNum ? '' : (flNum < 1.0 ? parseFloat(flNum.toFixed(4)) + '' : flNum.toFixed(0)).replace('.', ',');
+        return !flNum ? '' : (parseFloat(flNum.toFixed(4)) + '').replace('.', ',');
     };
 
     var selectedUnit;
