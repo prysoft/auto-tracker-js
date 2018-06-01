@@ -221,8 +221,14 @@ sap.ui.define([
                        reportTabBar.setSelectedItem(tbItems[0]);
                     }
 
-                    oView.getModel().setProperty('/requestedMessages', messages);
-                    oView.getModel().setProperty('/fuelChargesReport', {refueling_total: refueling_total, theft_total: theft_total});
+                    // TODO использовать другую модель для сообщений, чтобы не пересекалось значение sizeLimit
+                    var oModel = oView.getModel();
+                    var units = oModel.getProperty('/units');
+                    var modelSizeLimit = Math.max(units && units.length || 0, messages.length);
+                    oModel.setSizeLimit(modelSizeLimit > 100 ? modelSizeLimit : 100);
+
+                    oModel.setProperty('/requestedMessages', messages);
+                    oModel.setProperty('/fuelChargesReport', {refueling_total: refueling_total, theft_total: theft_total});
 
                     // Apply grouping and sorting after updating data
                     var optId = oCtrl._getGroupingOptId();
