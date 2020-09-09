@@ -5,6 +5,8 @@ sap.ui.define([
 ], function (Controller, MessageToast, $) {
     'use strict';
 
+    var _fuelCardsMap = {};
+
     var wialonTimeToDate = function(timeNumber) {
         try {
             var tzFormattedTime = wialon.util.DateTime.formatTime(timeNumber).replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6.000+03:00');
@@ -52,10 +54,12 @@ sap.ui.define([
         },
 
         getFuelCardsMap: function() {
-            if (!this._fuelCardsMap) {
-                this._fuelCardsMap = this.getView().getModel().getProperty('/fuelCardsMap');
-            }
-            return this._fuelCardsMap;
+            return _fuelCardsMap;
+        },
+
+        setFuelCardsMap: function(fuelCardsMap) {
+            _fuelCardsMap = fuelCardsMap || {};
+            this.getOwnerComponent().getModel().setProperty('/fuelCardsMap', _fuelCardsMap);
         },
 
         _saveAvlResources: function(avlResources) {

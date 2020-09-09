@@ -24,6 +24,7 @@ sap.ui.define([
                         var userName = user.getName();
                         console.log('USER LOGGED IN AS "' + userName + '"');
 
+                        this.setFuelCardsMap();
                         var userConfigModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/' + userName + '.json?ts=' + new Date().getTime()));
                         userConfigModel.attachRequestCompleted((function(evt) {
                             var fuelCards = userConfigModel.getProperty('/');
@@ -35,7 +36,7 @@ sap.ui.define([
                             for (var i = 0; i < fuelCards.length; i++) {
                                 fuelCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
                             }
-                            this.getOwnerComponent().getModel().setProperty('/fuelCardsMap', fuelCardsMap);
+                            this.setFuelCardsMap(fuelCardsMap);
                         }).bind(this));
 
                         this.loadAvlData();
