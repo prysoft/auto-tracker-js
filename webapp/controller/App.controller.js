@@ -318,6 +318,8 @@ sap.ui.define([
             from = period.fromTime;
             to = period.toTime;
 
+            var fuelCardsMap = this.getFuelCardsMap();
+
             var sess = wialon.core.Session.getInstance(); // get instance of current Session
 
             var ml = sess.getMessagesLoader(); // get messages loader object for current session
@@ -374,7 +376,8 @@ sap.ui.define([
                     var result = [];
                     for(var i = 0; i < data.length; i++) {
                         for (var prop in data[i].p) {
-                            if (prop.indexOf('refueling_amount') > -1 && data[i].p.refueling_amount) { // Отсекаем нулевые значения
+                            if (prop.indexOf('refueling_amount') > -1 && data[i].p.refueling_amount // Отсекаем нулевые значения
+                                && data[i].p.refueling_card_id in fuelCardsMap) {
                                 //if (result.length == 9){data[i].p.refueling_amount = 300.00;data[i].p.refueling_card_id = 322591;}
                                 data[i].t = wialonTimeToDate(data[i].t);
 

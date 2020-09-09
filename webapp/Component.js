@@ -9,7 +9,7 @@ sap.ui.define([
 ], function (UIComponent, JSONModel, Device) {
     'use strict';
 
-    var isAuthorized = true;
+    var isAuthorized = false;
     var requestedTarget;
 
     return UIComponent.extend('com.prysoft.autotracker.Component', {
@@ -52,6 +52,8 @@ sap.ui.define([
             var oModel = new JSONModel(oData);
             this.setModel(oModel);
 
+            /*
+            // Загрузка конфигурации уровня приложения
             var fuelCardsModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/fuel_cards.json?ts=' + new Date().getTime()));
             fuelCardsModel.attachRequestCompleted(function(evt) {
                 var fuelCards = fuelCardsModel.getProperty('/');
@@ -60,7 +62,8 @@ sap.ui.define([
                     fuelCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
                 }
                 oModel.setProperty('/fuelCardsMap', fuelCardsMap);
-            });
+                console.log('fuel_cards.json LOADED');
+            });*/
         },
 
         setAuthorized: function(newVal) {

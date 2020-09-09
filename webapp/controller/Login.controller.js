@@ -1,6 +1,7 @@
 sap.ui.define([
-    'com/prysoft/autotracker/controller/App.controller'
-], function(Controller){
+    'com/prysoft/autotracker/controller/App.controller',
+    'sap/ui/model/json/JSONModel'
+], function(Controller, JSONModel){
     'use strict';
 
     var messageRecieved;
@@ -20,7 +21,22 @@ sap.ui.define([
                         this.getOwnerComponent().setAuthorized(true);
 
                         var user = wialon.core.Session.getInstance().getCurrUser();
-                        console.log('USER LOGGED IN AS ' + user.getName());
+                        var userName = user.getName();
+                        console.log('USER LOGGED IN AS "' + userName + '"');
+
+                        var userConfigModel = new JSONModel(jQuery.sap.getModulePath('com.prysoft.autotracker.config', '/' + userName + '.json?ts=' + new Date().getTime()));
+                        userConfigModel.attachRequestCompleted((function(evt) {
+                            var fuelCards = userConfigModel.getProperty('/');
+                            if (!this.isArray(fuelCards)) {
+                                return;
+                            }
+                            console.log('FUEL CARDS LOADED');
+                            var fuelCardsMap = {};
+                            for (var i = 0; i < fuelCards.length; i++) {
+                                fuelCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
+                            }
+                            this.getOwnerComponent().getModel().setProperty('/fuelCardsMap', fuelCardsMap);
+                        }).bind(this));
 
                         this.loadAvlData();
                     }).bind(this));

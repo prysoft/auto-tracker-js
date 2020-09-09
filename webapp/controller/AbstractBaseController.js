@@ -64,6 +64,10 @@ sap.ui.define([
             this.setCookie(name, '', options);
         },
 
+        isArray: function(obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        },
+
         parseDate: function(strDate) {
             try {
                 var reformattedDate = strDate.replace(/^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/, '$1-$2-$3T$4:$5:$6');
