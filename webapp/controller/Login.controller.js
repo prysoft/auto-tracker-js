@@ -17,7 +17,7 @@ sap.ui.define([
                         }
 
                         window.removeEventListener('message', messageRecieved);
-                        this.setCookie('access_token', token, {path: '/', expires: 4 * 60 * 60});
+                        this.setCookie('access_token', token, {path: '/', expires: 4 * 60 * 60}); //, SameSite: 'None', Secure: true
                         this.getOwnerComponent().setAuthorized(true);
 
                         var user = wialon.core.Session.getInstance().getCurrUser();
