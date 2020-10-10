@@ -34,7 +34,9 @@ sap.ui.define([
                             console.log('FUEL CARDS LOADED');
                             var fuelCardsMap = {};
                             for (var i = 0; i < fuelCards.length; i++) {
-                                fuelCardsMap[fuelCards[i].cardId] = {key: fuelCards[i].key, name: fuelCards[i].name};
+                                fuelCardsMap[fuelCards[i].cardId] = {
+                                    key: fuelCards[i].key, name: fuelCards[i].name, group: fuelCards[i].group
+                                };
                             }
                             this.setFuelCardsMap(fuelCardsMap);
                         }).bind(this));

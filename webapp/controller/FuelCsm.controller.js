@@ -105,6 +105,28 @@ sap.ui.define([
             return null;
         },
 
+        _fillFuelCsmGroupSelect: function (oSelect) {
+            oSelect.addItem(new sap.ui.core.Item({ key: null, text: "{i18n>sFuelCsmAllGroups}"}));
+
+            var fuelCardsMap = this.getView().getModel().getProperty('/fuelCardsMap');
+            var uniqueGroups = {};
+            for (var prop in fuelCardsMap) {
+                var grp = fuelCardsMap[prop].group;
+                if (!grp) {
+                    continue;
+                }
+                var uGrp = grp.toLocaleUpperCase();
+                var groupData = uniqueGroups[uGrp] || (uniqueGroups[uGrp] = {name: grp, cardIds: []});
+                groupData.cardIds.push(prop);
+            }
+
+            for (var prop in uniqueGroups) {
+                oSelect.addItem(new sap.ui.core.Item({ key: uniqueGroups[prop].cardIds, text: uniqueGroups[prop].name}));
+            }
+
+            oSelect.setVisible(oSelect.getItems().length > 1);
+        },
+
         _requestMessages: function() {
             if (selectedUnit) {
                 var period = this._getPeriodDates();
@@ -147,6 +169,8 @@ sap.ui.define([
                     var refueling_total = 0;
                     if (messages.length) {
                         var fuelChargesTab = sap.ui.xmlfragment("com.prysoft.autotracker.view.FuelCharges", oCtrl);
+                        var oSelect = sap.ui.getCore().byId('fuelCsmGroupSelect');
+                        oCtrl._fillFuelCsmGroupSelect(oSelect);
                         reportTabBar.addItem(fuelChargesTab);
                         for (var i = 0; i < messages.length; i++) {
                             if (messages[i].p && !isNaN(messages[i].p.refueling_amount)) {
@@ -377,6 +401,25 @@ sap.ui.define([
             var btn = oEvt.getSource().getSelectedButton();
             var btnId = btn.getId();
             this._sortFuelChargeReport(btnId);
+        },
+
+        onFuelCsmGroupSelect: function(oEvt) {
+            var grpKey = oEvt.getParameters().selectedItem.getKey();
+
+            var tblFuelMessages = sap.ui.getCore().byId('tblFuelMessages');
+            var tblFuelMsgBinding = tblFuelMessages.getBinding('items');
+
+            tblFuelMsgBinding.aSorters = null;
+            tblFuelMsgBinding.aFilters = null;
+
+            tblFuelMsgBinding.filter([new sap.ui.model.Filter({
+                path: 'p/refueling_card_id',
+                test: function(oValue){
+                    return !grpKey || new RegExp('\\b' + oValue + '\\b').test(grpKey);
+                }
+            })]);
+
+            this._sortFuelChargeReport(this._getGroupingOptId());
         },
 
         formatRefuelingCardId: function(theftPlace, cardId, fuelCardsMap) {

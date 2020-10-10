@@ -9,6 +9,8 @@
                     <RadioButton id="groupByDate" text="по дате" />
                 </buttons>
             </RadioButtonGroup>
+            <Select id="fuelCsmGroupSelect" forceSelection="true" visible="false"
+                    change="onFuelCsmGroupSelect" class="sapUiSmallMarginBeginEnd" />
         </HBox>
 
         <!-- Two tables is a workaround for fixed sap.m.Table header -->
